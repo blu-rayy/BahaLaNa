@@ -1,108 +1,187 @@
-# BahaLa Na - IMERG fetcher (backend)
+# Backend - BahaLa Na Climate Data API
 
-FastAPI service for querying NASA's GPM IMERG rainfall data using NASA CMR API and Earthdata authentication.
+FastAPI server providing NASA climate data for flood risk assessment.
 
-## Files
-- `app.py` - FastAPI app with endpoints for IMERG data
-- `requirements.txt` - Python dependencies
-- `test_client.py` - Simple test client
+---
 
 ## Setup
 
-### 1. Create virtual environment and install dependencies
-
 ```powershell
-cd backend
+# Create virtual environment
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
+
+# Install dependencies
 pip install -r requirements.txt
+
+# Set NASA Earthdata JWT token
+$env:EARTHDATA_JWT = "your_token_here"
+
+# Run server
+python -m uvicorn main:app --host 127.0.0.1 --port 8000 --reload
 ```
 
-### 2. Set your NASA Earthdata JWT token
+---
 
-**Option A: Environment Variable (Recommended)**
-```powershell
-$env:EARTHDATA_JWT = "eyJ0eXAiOiJKV1QiLCJvcmlnaW4iOiJFYXJ0aGRhdGEgTG9naW4i..."
+## Project Structure
+
+```
+backend/
+├── main.py                 # Application entry point
+├── app/
+│   ├── config.py          # Configuration settings
+│   ├── models.py          # Pydantic request/response models
+│   ├── utils.py           # Utility functions
+│   └── routes/
+│       ├── health.py      # Health check
+│       ├── imerg.py       # IMERG endpoints
+│       ├── power.py       # POWER endpoint
+│       └── flood_risk.py  # Flood risk endpoint
+├── requirements.txt
+├── test_client.py
+└── test_power_api.py
 ```
 
-**Option B: Pass in Authorization header** (see usage examples below)
-
-### 3. Run the server
-
-```powershell
-python -m uvicorn app:app --host 127.0.0.1 --port 8000
-```
-
-The server will be available at `http://127.0.0.1:8000`
+---
 
 ## API Endpoints
 
-### `GET /`
-Health check endpoint.
-
-```powershell
-Invoke-RestMethod -Uri http://127.0.0.1:8000/
+### Health Check
+```http
+GET /
+GET /api/
 ```
 
-### `POST /api/imerg/metadata`
-Query CMR for IMERG granule metadata (no download). Fast and lightweight.
+### IMERG (Satellite Rainfall)
+```http
+POST /api/imerg/metadata
+POST /api/imerg
 
-**Request body:**
-```json
+Request body:
 {
-  "start_date": "2024-09-01",
-  "end_date": "2024-09-01",
-  "bbox": "115,4,126,21"
+  "start_date": "2025-01-01",  // YYYY-MM-DD
+  "end_date": "2025-01-07",
+  "bbox": "115,4,126,21"       // Optional: minLon,minLat,maxLon,maxLat
 }
+
+Headers:
+Authorization: Bearer <your_jwt_token>
 ```
 
-**Example (using environment variable):**
-```powershell
-$body = @{ start_date='2024-09-01'; end_date='2024-09-01'; bbox='115,4,126,21' } | ConvertTo-Json
-Invoke-RestMethod -Uri http://127.0.0.1:8000/api/imerg/metadata -Method Post -Body $body -ContentType 'application/json'
-```
+### POWER (Climate Data)
+```http
+POST /api/power/climate
 
-**Example (with Authorization header):**
-```powershell
-$token = 'Bearer eyJ0eXA...'
-$body = @{ start_date='2024-09-01'; end_date='2024-09-01'; bbox='115,4,126,21' } | ConvertTo-Json
-Invoke-RestMethod -Uri http://127.0.0.1:8000/api/imerg/metadata -Method Post -Body $body -Headers @{ Authorization = $token } -ContentType 'application/json'
-```
-
-**Response:**
-```json
+Request body:
 {
-  "total_hits": 1,
-  "count": 1,
-  "granules": [{
-    "id": "G3225068022-GES_DISC",
-    "title": "GPM_3IMERGDL.07:3B-DAY-L.MS.MRG.3IMERG...",
-    "start_time": "2024-09-01T00:00:00.000Z",
-    "end_time": "2024-09-01T23:59:59.999Z",
-    "size": "32.90",
-    "links": [...]
-  }]
+  "start_date": "20250101",    // YYYYMMDD
+  "end_date": "20250107",
+  "latitude": 14.5995,
+  "longitude": 120.9842,
+  "parameters": "T2M,PRECTOTCORR,RH2M,WS2M"
 }
+
+No authentication required!
 ```
 
-### `POST /api/imerg`
-Download IMERG granule and extract rainfall data (requires xarray).
+### Flood Risk Assessment
+```http
+POST /api/flood-risk
 
-**Request body:** Same as metadata endpoint
+Request body:
+{
+  "start_date": "2025-01-01",  // YYYY-MM-DD
+  "end_date": "2025-01-07",
+  "latitude": 14.5995,
+  "longitude": 120.9842
+}
 
-**Response:** Granule data with precipitation statistics (if xarray installed) or download path
+Headers:
+Authorization: Bearer <your_jwt_token>
+```
 
-## Notes
+---
 
-- **Authentication:** Requires NASA Earthdata JWT token (get from https://urs.earthdata.nasa.gov/)
-- **xarray:** Optional dependency - app works without it but returns metadata only
-- **Bounding box:** Format is `minLon,minLat,maxLon,maxLat` (e.g., Philippines: `115,4,126,21`)
-- **Date format:** `YYYY-MM-DD`
+## Testing
 
-## Future Improvements
+### Quick Test
 
-- Caching downloaded granules
-- Spatial subsetting (crop to exact region)
-- Multiple granule downloads
-- Streaming for large files
-- Rate limiting and retry logic
+```powershell
+# Test POWER API (no auth)
+$body = '{"start_date":"20250101","end_date":"20250107","latitude":14.5995,"longitude":120.9842}' 
+Invoke-RestMethod -Uri http://127.0.0.1:8000/api/power/climate -Method Post -Body $body -ContentType 'application/json'
+```
+
+### Run Test Suite
+
+```powershell
+python test_power_api.py
+```
+
+---
+
+## Configuration
+
+### Environment Variables
+
+- `EARTHDATA_JWT` - NASA Earthdata authentication token (required for IMERG)
+
+### Files
+
+- `app/config.py` - API URLs, timeouts, dataset names
+- `requirements.txt` - Python dependencies
+
+---
+
+## Development
+
+### Adding a New Endpoint
+
+1. Create route file in `app/routes/`
+2. Add router to `app/routes/__init__.py`
+3. Update documentation
+
+### Running Tests
+
+```powershell
+pytest tests/
+```
+
+---
+
+## Documentation
+
+See `/docs` folder for detailed documentation:
+- Development notes
+- API usage examples
+- POWER API integration guide
+
+---
+
+## Dependencies
+
+**Core:**
+- fastapi - Web framework
+- uvicorn - ASGI server
+- httpx - Async HTTP client
+- pydantic - Data validation
+
+**Optional:**
+- xarray - NetCDF/HDF5 parsing (for IMERG downloads)
+
+---
+
+## Date Formats
+
+| API | Format | Example |
+|-----|--------|---------|
+| IMERG | YYYY-MM-DD | 2025-01-15 |
+| POWER | YYYYMMDD | 20250115 |
+| Flood Risk | YYYY-MM-DD | 2025-01-15 |
+
+Use `app.utils.convert_date_format()` for conversion.
+
+---
+
+**Version:** 1.0.0  
+**Last Updated:** October 5, 2025
