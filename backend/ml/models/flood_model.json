@@ -1,0 +1,162 @@
+{
+  "model_type": "XGBoost (Gradient Boosting)",
+  "feature_columns": [
+    "precipitation",
+    "precip_7day_sum",
+    "precip_7day_max",
+    "precip_3day_sum",
+    "precip_14day_avg",
+    "consecutive_rainy_days",
+    "precip_rate_of_change",
+    "temperature",
+    "temp_7day_avg",
+    "humidity",
+    "humidity_7day_avg",
+    "high_humidity",
+    "wind_speed",
+    "day_of_year",
+    "month",
+    "is_wet_season",
+    "precip_humidity_interaction",
+    "precipitation_lag1",
+    "precipitation_lag3",
+    "temperature_lag1",
+    "humidity_lag1"
+  ],
+  "train_date": "2025-10-05T10:38:35.382408",
+  "train_size": 4004,
+  "test_size": 1001,
+  "test_accuracy": 0.998001998001998,
+  "test_f1_score": 0.9600400439288626,
+  "positive_samples": 193,
+  "negative_samples": 4812,
+  "scale_pos_weight": 25.0,
+  "model_params": {
+    "objective": "binary:logistic",
+    "base_score": null,
+    "booster": null,
+    "callbacks": null,
+    "colsample_bylevel": null,
+    "colsample_bynode": null,
+    "colsample_bytree": 0.8,
+    "device": null,
+    "early_stopping_rounds": null,
+    "enable_categorical": false,
+    "eval_metric": "logloss",
+    "feature_types": null,
+    "feature_weights": null,
+    "gamma": 0.1,
+    "grow_policy": null,
+    "importance_type": null,
+    "interaction_constraints": null,
+    "learning_rate": 0.1,
+    "max_bin": null,
+    "max_cat_threshold": null,
+    "max_cat_to_onehot": null,
+    "max_delta_step": null,
+    "max_depth": 10,
+    "max_leaves": null,
+    "min_child_weight": 5,
+    "missing": NaN,
+    "monotone_constraints": null,
+    "multi_strategy": null,
+    "n_estimators": 200,
+    "n_jobs": -1,
+    "num_parallel_tree": null,
+    "random_state": 42,
+    "reg_alpha": 0.1,
+    "reg_lambda": 1.0,
+    "sampling_method": null,
+    "scale_pos_weight": 25.0,
+    "subsample": 0.8,
+    "tree_method": null,
+    "validate_parameters": null,
+    "verbosity": 1
+  },
+  "feature_importance": [
+    {
+      "feature": "precipitation",
+      "importance": 0
+    },
+    {
+      "feature": "precip_7day_sum",
+      "importance": 0
+    },
+    {
+      "feature": "precip_7day_max",
+      "importance": 0
+    },
+    {
+      "feature": "precip_3day_sum",
+      "importance": 0
+    },
+    {
+      "feature": "precip_14day_avg",
+      "importance": 0
+    },
+    {
+      "feature": "consecutive_rainy_days",
+      "importance": 0
+    },
+    {
+      "feature": "precip_rate_of_change",
+      "importance": 0
+    },
+    {
+      "feature": "temperature",
+      "importance": 0
+    },
+    {
+      "feature": "temp_7day_avg",
+      "importance": 0
+    },
+    {
+      "feature": "humidity",
+      "importance": 0
+    },
+    {
+      "feature": "humidity_7day_avg",
+      "importance": 0
+    },
+    {
+      "feature": "high_humidity",
+      "importance": 0
+    },
+    {
+      "feature": "wind_speed",
+      "importance": 0
+    },
+    {
+      "feature": "day_of_year",
+      "importance": 0
+    },
+    {
+      "feature": "month",
+      "importance": 0
+    },
+    {
+      "feature": "is_wet_season",
+      "importance": 0
+    },
+    {
+      "feature": "precip_humidity_interaction",
+      "importance": 0
+    },
+    {
+      "feature": "precipitation_lag1",
+      "importance": 0
+    },
+    {
+      "feature": "precipitation_lag3",
+      "importance": 0
+    },
+    {
+      "feature": "temperature_lag1",
+      "importance": 0
+    },
+    {
+      "feature": "humidity_lag1",
+      "importance": 0
+    }
+  ]
+}
