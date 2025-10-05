@@ -15,7 +15,7 @@ except Exception:
 app = FastAPI(title="BahaLa Na - IMERG fetcher")
 
 CMR_SEARCH_URL = "https://cmr.earthdata.nasa.gov/search/granules.json"
-NASA_POWER_URL = "https://power.larc.nasa.gov/api/temporal/daily/point"
+zNASA_POWER_URL = "https://power.larc.nasa.gov/api/temporal/daily/point"
 
 # Load Earthdata JWT from environment variable (secure)
 # Set via: $env:EARTHDATA_JWT = "your_token_here" (PowerShell)
