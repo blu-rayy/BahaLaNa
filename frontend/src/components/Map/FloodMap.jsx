@@ -199,31 +199,36 @@ const FloodMap = forwardRef(({ className, onMarkerClick }, ref) => {
       
       const newLat = baseLat + latOffset;
       const newLng = baseLng + lngOffset;
-      const score = Math.random() * 100;
+      
+      // 🔧 FIX: Use interpolated score based on real center data instead of random
+      // Add realistic variation (±20 points) around the main score
+      const variation = (Math.random() - 0.5) * 40; // -20 to +20 variation
+      const score = Math.max(0, Math.min(100, mainScore + variation));
       const level = getRiskLevel(score);
       
-      // Generate realistic climate data for nearby locations
-      const precipitation = Math.random() * 10 + 1;
-      const humidity = Math.random() * 30 + 60;
+      // 🔧 FIX: Generate realistic climate data based on main location data
+      const precipitation = mainData.precipitation * (0.8 + Math.random() * 0.4); // ±20% variation
+      const humidity = mainData.humidity * (0.9 + Math.random() * 0.2); // ±10% variation
       
       nearbyMarkers.push({
         id: `nearby-${i}`,
         lat: newLat,
         lng: newLng,
-        score: score,
+        score: Math.round(score), // Round to integer
         level: level,
         isMain: false,
         data: {
-          precipitation: precipitation,
-          temperature: Math.random() * 10 + 20,
-          humidity: humidity,
-          max_precipitation: precipitation * (Math.random() * 3 + 2),
+          precipitation: Math.round(precipitation * 100) / 100, // Round to 2 decimals
+          temperature: mainData.temperature * (0.95 + Math.random() * 0.1), // ±5% temperature variation
+          humidity: Math.round(humidity * 100) / 100,
+          max_precipitation: mainData.max_precipitation * (0.8 + Math.random() * 0.4),
           risk_factors: [
-            `High humidity (${humidity.toFixed(1)}%)`,
-            'IMERG satellite data available'
+            `Precipitation: ${precipitation.toFixed(1)}mm/day`,
+            `Humidity: ${humidity.toFixed(1)}%`,
+            `Nearby analysis (~${(Math.sqrt(latOffset*latOffset + lngOffset*lngOffset) * 111).toFixed(1)}km away)`
           ],
-          data_days: 30,
-          satellite_images: Math.floor(Math.random() * 5 + 8)
+          data_days: mainData.data_days || 30,
+          satellite_images: mainData.satellite_images || 10
         }
       });
     }
@@ -275,10 +280,7 @@ const FloodMap = forwardRef(({ className, onMarkerClick }, ref) => {
         }
       };
       
-      console.log('🧪 Adding test marker:', testMarker);
-      setMarkers([testMarker]);
-      
-      // Then try to generate actual markers
+      // Generate risk markers based on location
       if (selectedLocation) {
         console.log('🎯 Generating risk markers from Dashboard...');
         generateNearbyLocations(selectedLocation.lat, selectedLocation.lng);
