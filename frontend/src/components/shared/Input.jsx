@@ -16,7 +16,7 @@ const Input = ({
   return (
     <div className="w-full">
       {label && (
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+        <label className="block text-sm font-semibold text-slate-700 mb-2">
           {label}
           {required && <span className="text-red-500 ml-1">*</span>}
         </label>
@@ -24,16 +24,16 @@ const Input = ({
       <input
         type={type}
         className={cn(
-          'w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors',
+          'w-full px-4 py-3 border rounded-xl shadow-sm bg-white/80 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all duration-200 hover:shadow-md',
           error
-            ? 'border-red-500 focus:ring-red-500 focus:border-red-500'
-            : 'border-gray-300',
+            ? 'border-red-400 focus:ring-red-500/50 focus:border-red-500'
+            : 'border-slate-300 hover:border-slate-400',
           className
         )}
         {...props}
       />
-      {error && <p className="mt-1 text-sm text-red-600">{error}</p>}
-      {helperText && !error && <p className="mt-1 text-sm text-gray-500">{helperText}</p>}
+      {error && <p className="mt-2 text-sm text-red-600 font-medium">{error}</p>}
+      {helperText && !error && <p className="mt-2 text-sm text-slate-600">{helperText}</p>}
     </div>
   );
 };
