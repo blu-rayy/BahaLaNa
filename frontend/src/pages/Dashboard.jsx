@@ -3,7 +3,7 @@
  * Main flood risk assessment dashboard
  */
 import { useState, useEffect } from 'react';
-import FloodMap from '../components/Map/FloodMap';
+import FloodMapSimple from '../components/Map/FloodMapSimple';
 import Card from '../components/shared/Card';
 import Button from '../components/shared/Button';
 import Input from '../components/shared/Input';
@@ -208,7 +208,7 @@ const Dashboard = () => {
                   <p className="text-xs text-gray-500 mt-1">NASA Satellite Data</p>
                 </div>
               ) : (
-                <FloodMap className="h-full w-full" />
+                <FloodMapSimple className="h-full w-full" />
               )}
             </div>
           </div>
