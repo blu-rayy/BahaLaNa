@@ -3,7 +3,6 @@
  */
 import { useEffect, useState } from 'react';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
-import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 
 // Fix for default marker icon in Leaflet with Webpack/Vite
@@ -16,11 +15,19 @@ L.Icon.Default.mergeOptions({
 
 const FloodMapSimple = ({ className }) => {
   const [mapError, setMapError] = useState(null);
+  const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
     console.log('Simple FloodMap mounted');
     console.log('Leaflet available:', typeof L !== 'undefined');
     console.log('Leaflet version:', L.version);
+    
+    // Add delay to ensure CSS is loaded
+    const timer = setTimeout(() => {
+      setIsReady(true);
+    }, 250);
+    
+    return () => clearTimeout(timer);
   }, []);
 
   if (mapError) {
@@ -35,16 +42,27 @@ const FloodMapSimple = ({ className }) => {
     );
   }
 
+  if (!isReady) {
+    return (
+      <div className={`${className} relative flex items-center justify-center bg-gray-100`} style={{ minHeight: '400px' }}>
+        <div className="text-center text-gray-600">
+          <div className="text-4xl mb-2">🗺️</div>
+          <p className="text-lg font-semibold">Loading Map...</p>
+          <p className="text-sm">Initializing Leaflet</p>
+        </div>
+      </div>
+    );
+  }
+
   try {
     return (
       <div className={`${className} relative`} style={{ minHeight: '400px', height: '100%' }}>
         <MapContainer
+          key="simple-flood-map"
           center={[14.5995, 120.9842]}
           zoom={10}
           style={{ height: '100%', width: '100%', minHeight: '400px' }}
-          whenCreated={(mapInstance) => {
-            console.log('Map created successfully:', mapInstance);
-          }}
+          scrollWheelZoom={true}
         >
           <TileLayer
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'

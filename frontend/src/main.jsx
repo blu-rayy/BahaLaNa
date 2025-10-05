@@ -1,5 +1,5 @@
-import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
+import 'leaflet/dist/leaflet.css'
 import './index.css'
 import App from './App.jsx'
 
@@ -17,9 +17,7 @@ try {
   } else {
     console.log('✅ Root element found, rendering app...');
     createRoot(root).render(
-      <StrictMode>
-        <App />
-      </StrictMode>,
+      <App />
     );
     console.log('✅ App rendered successfully!');
   }
