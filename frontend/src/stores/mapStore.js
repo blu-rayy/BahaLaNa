@@ -17,6 +17,7 @@ const useMapStore = create((set) => ({
     markers: true,
   },
   selectedLocation: null,
+  riskMarkers: [], // Add risk markers to store
 
   // Actions
   setCenter: (lat, lon) => {
@@ -40,6 +41,14 @@ const useMapStore = create((set) => ({
     set({ selectedLocation: location });
   },
 
+  setRiskMarkers: (markers) => {
+    set({ riskMarkers: markers });
+  },
+
+  clearRiskMarkers: () => {
+    set({ riskMarkers: [] });
+  },
+
   reset: () => {
     set({
       center: [
@@ -53,6 +62,7 @@ const useMapStore = create((set) => ({
         markers: true,
       },
       selectedLocation: null,
+      riskMarkers: [],
     });
   },
 }));

@@ -110,9 +110,20 @@ const MapViewController = ({ center, zoom }) => {
 
 const FloodMap = forwardRef(({ className, onMarkerClick }, ref) => {
   const [isReady, setIsReady] = useState(false);
-  const [markers, setMarkers] = useState([]);
   const [selectedLocation, setSelectedLocation] = useState(null);
   const [clickedPoint, setClickedPoint] = useState(null);
+  
+  // Get markers from store instead of local state
+  const markers = useMapStore((state) => state.riskMarkers);
+  const setMarkers = useMapStore((state) => state.setRiskMarkers);
+  
+  // Debug: log when markers state changes
+  useEffect(() => {
+    console.log('🔄 FloodMap markers state changed:', markers.length, markers);
+  }, [markers]);
+  
+  // Debug: log component render
+  console.log('🗺️ FloodMap render - markers count:', markers.length);
   
   const location = useFloodStore((state) => state.location);
   const dateRange = useFloodStore((state) => state.dateRange);
@@ -121,8 +132,8 @@ const FloodMap = forwardRef(({ className, onMarkerClick }, ref) => {
   const floodData = useFloodStore((state) => state.floodData);
   const loading = useFloodStore((state) => state.loading);
   
-  const mapCenter = useMapStore((state) => state.mapCenter);
-  const setMapCenter = useMapStore((state) => state.setMapCenter);
+  const mapCenter = useMapStore((state) => state.center);
+  const setMapCenter = useMapStore((state) => state.setCenter);
 
   useEffect(() => {
     console.log('🗺️ Advanced FloodMap mounted');
@@ -151,30 +162,23 @@ const FloodMap = forwardRef(({ className, onMarkerClick }, ref) => {
     const numMarkers = Math.floor(Math.random() * 4) + 5; // 5-8 markers
     
     // Add the main location as the first marker
-    const mainScore = floodData?.flood_risk?.score || floodData?.risk_score || Math.random() * 100;
+    const mainScore = floodData?.flood_risk?.score || floodData?.risk_score || Math.floor(Math.random() * 100);
     const mainLevel = getRiskLevel(mainScore);
     console.log(`📍 Main marker - Score: ${mainScore}, Level: ${mainLevel}`);
     
-    // Extract data from floodData if available
-    const mainData = floodData ? {
-      precipitation: floodData.climate_summary?.avg_precipitation_mm || Math.random() * 10 + 1,
-      temperature: floodData.climate_summary?.avg_temperature_c || Math.random() * 10 + 20,
-      humidity: floodData.climate_summary?.avg_humidity_percent || Math.random() * 30 + 60,
-      max_precipitation: floodData.climate_summary?.max_precipitation_mm || Math.random() * 20 + 5,
-      risk_factors: floodData.flood_risk?.factors || [],
-      data_days: floodData.data_sources?.power_data_days || 30,
-      satellite_images: floodData.data_sources?.imerg_granules_found || 10
-    } : {
-      precipitation: Math.random() * 10 + 1,
-      temperature: Math.random() * 10 + 20,
-      humidity: Math.random() * 30 + 60,
-      max_precipitation: Math.random() * 20 + 5,
-      risk_factors: [
+    // Generate realistic climate data (API data or fallback values)
+    const mainData = {
+      precipitation: floodData?.climate_summary?.avg_precipitation_mm || Math.random() * 10 + 1,
+      temperature: floodData?.climate_summary?.avg_temperature_c || Math.random() * 10 + 20,
+      humidity: floodData?.climate_summary?.avg_humidity_percent || Math.random() * 30 + 60,
+      max_precipitation: floodData?.climate_summary?.max_precipitation_mm || Math.random() * 20 + 5,
+      risk_factors: floodData?.flood_risk?.factors || [
         `High humidity (${(Math.random() * 30 + 60).toFixed(1)}%)`,
-        'IMERG satellite data available'
+        'IMERG satellite data available',
+        'Historical rainfall patterns indicate risk'
       ],
-      data_days: 30,
-      satellite_images: 10
+      data_days: floodData?.data_sources?.power_data_days || 30,
+      satellite_images: floodData?.data_sources?.imerg_granules_found || 10
     };
     
     nearbyMarkers.push({
@@ -226,7 +230,12 @@ const FloodMap = forwardRef(({ className, onMarkerClick }, ref) => {
     
     console.log(`✅ Generated ${nearbyMarkers.length} risk markers:`, nearbyMarkers);
     setMarkers(nearbyMarkers);
-    console.log('✅ Markers state updated');
+    console.log('✅ Markers state updated. New markers count:', nearbyMarkers.length);
+    
+    // Force a small delay to ensure state update
+    setTimeout(() => {
+      console.log('✅ Markers state after timeout:', markers.length);
+    }, 100);
   };
 
   // Handle map click to select location
@@ -239,7 +248,7 @@ const FloodMap = forwardRef(({ className, onMarkerClick }, ref) => {
     // Set location in store
     setLocation(lat, lng);
     setSelectedLocation({ lat, lng });
-    setMapCenter([lat, lng]);
+    setMapCenter(lat, lng);
     
     console.log('📍 Location marker set. Click "Run Analysis" to generate risk assessment.');
   };
@@ -247,12 +256,38 @@ const FloodMap = forwardRef(({ className, onMarkerClick }, ref) => {
   // Expose generateNearbyLocations to parent component via ref
   useImperativeHandle(ref, () => ({
     generateRiskMarkers: () => {
+      console.log('🎯 generateRiskMarkers called from Dashboard');
+      
+      // Force add a test marker first to verify rendering works
+      const testMarker = {
+        id: 'test-marker',
+        lat: 14.5995,
+        lng: 120.9842,
+        score: 85,
+        level: 'Critical',
+        isMain: false,
+        data: {
+          precipitation: 15.5,
+          temperature: 28.5,
+          humidity: 85,
+          risk_factors: ['Test marker'],
+          data_days: 30
+        }
+      };
+      
+      console.log('🧪 Adding test marker:', testMarker);
+      setMarkers([testMarker]);
+      
+      // Then try to generate actual markers
       if (selectedLocation) {
         console.log('🎯 Generating risk markers from Dashboard...');
         generateNearbyLocations(selectedLocation.lat, selectedLocation.lng);
       } else if (clickedPoint) {
         console.log('🎯 Generating risk markers from clicked point...');
         generateNearbyLocations(clickedPoint.lat, clickedPoint.lng);
+      } else if (location.latitude && location.longitude) {
+        console.log('🎯 Generating risk markers from default location...');
+        generateNearbyLocations(location.latitude, location.longitude);
       } else {
         console.warn('⚠️ No location selected to generate markers');
       }
@@ -428,6 +463,7 @@ const FloodMap = forwardRef(({ className, onMarkerClick }, ref) => {
         )}
         
         {/* Render all risk markers */}
+        {console.log('🗺️ About to render markers. Count:', markers.length, 'Markers:', markers)}
         {markers.map((marker) => (
           <Marker
             key={marker.id}
