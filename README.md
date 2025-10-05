@@ -1,42 +1,268 @@
-# BahaLa Na 🌊🇵🇭🛰️
+# BahaLa Na 🌊🇵🇭
 
 
 
-**"From bahala na to may plano na"**  **Tagline:** "From bahala na to may plano na"  
-
-*If they won't protect us, we'll protect ourselves.***Mission:** Data-driven flood awareness and prediction for the Philippines
+*From "bahala na" to "may plano na" - Community flood risk assessment using NASA satellite data*
 
 
 
-**Community-Driven Flood Risk Assessment System**  *NASA Space Apps 2025 Project*
+**NASA Space Apps Challenge 2025****"From bahala na to may plano na"**  **Tagline:** "From bahala na to may plano na"  
 
-*NASA Space Apps Challenge 2025*
+
+
+---*If they won't protect us, we'll protect ourselves.***Mission:** Data-driven flood awareness and prediction for the Philippines
+
+
+
+## 🚀 Installation & Setup
+
+
+
+### Prerequisites**Community-Driven Flood Risk Assessment System**  *NASA Space Apps 2025 Project*
+
+- Node.js 18+ and npm
+
+- Python 3.13+*NASA Space Apps Challenge 2025*
+
+
+
+### 1. Frontend (React App)---
+
+
+
+Open terminal and run:---
+
+
+
+```bash## Quick Start
+
+cd frontend
+
+npm install## 🚀 Quick Start Guide
+
+npm run dev
+
+```### Backend Setup
+
+
+
+✅ **Frontend runs at:** http://localhost:5173### Prerequisites
+
+
+
+### 2. Backend (FastAPI Server)- **Node.js** 18+ and npm```powershell
+
+
+
+Open **another terminal** and run:- **Python** 3.13+cd backend
+
+
+
+```bash- **Git**python -m venv .venv
+
+cd backend
+
+python -m venv .venv.\.venv\Scripts\Activate.ps1
+
+.\.venv\Scripts\Activate.ps1  # Windows PowerShell
+
+pip install -r requirements.txt### 1. Frontend Setup (React + NASA Branding)pip install -r requirements.txt
+
+python main.py
+
+```
+
+
+
+✅ **Backend runs at:** http://localhost:8000```powershell# Set your NASA Earthdata JWT token
+
+
+
+### 3. Using the App# Navigate to frontend$env:EARTHDATA_JWT = "your_token_here"
+
+
+
+1. Make sure **both servers are running**cd frontend
+
+2. Open http://localhost:5173 in your browser
+
+3. Click anywhere on the Philippines map# Run server
+
+4. Click **"Run Analysis"** button
+
+5. See flood risk markers with scores (🔴 High Risk, 🟡 Medium, 🟢 Low)# Install dependenciespython -m uvicorn main:app --host 127.0.0.1 --port 8000 --reload
+
+
+
+---npm install```
+
+
+
+## 📱 What It Does
+
+
+
+**BahaLa Na** helps Filipino communities assess flood risk using real NASA satellite data:# Start development serverVisit: http://127.0.0.1:8000/docs for API documentation
+
+
+
+- **Interactive Map**: Click anywhere in the Philippinesnpm run dev
+
+- **NASA Data**: Real precipitation and climate data from satellites
+
+- **Risk Scores**: 0-100 flood risk assessment with color-coded markers```---
+
+- **Geographic Intelligence**: Accounts for terrain (mountains vs river valleys)
+
+
+
+### Example Results:
+
+- **Bohol** (limestone terrain): Low risk 15-35 🟢**Frontend will be available at:** http://localhost:5173/## Project Structure
+
+- **Marikina Valley** (flood-prone): High risk 70-95 🔴
+
+
+
+---
+
+### 2. Backend Setup (FastAPI + NASA APIs)```
+
+## 🛠️ Tech Stack
+
+BahaLa Na/
+
+**Frontend**: React + Vite + Tailwind CSS + Leaflet Maps  
+
+**Backend**: Python + FastAPI + NASA IMERG + NASA POWER APIs  ```powershell├── backend/              # FastAPI backend
+
+**Features**: Real-time flood risk analysis with NASA satellite data
+
+# Navigate to backend│   ├── main.py          # Application entry point
+
+---
+
+cd backend│   ├── app/             # Application modules
+
+## 🌟 Mission
+
+│   │   ├── config.py    # Configuration
+
+*"If they won't protect us, we'll protect ourselves."*
+
+# Create virtual environment (if not exists)│   │   ├── models.py    # Data models
+
+When institutional flood control fails, communities can access the same NASA satellite technology that governments use to make informed decisions about flood risk.
+
+python -m venv .venv│   │   ├── utils.py     # Utilities
+
+---
+
+│   │   └── routes/      # API endpoints
+
+**Built for NASA Space Apps Challenge 2025** 🛰️
+# Activate virtual environment│   └── requirements.txt
+
+.\.venv\Scripts\Activate.ps1├── docs/                 # Documentation
+
+│   ├── DEVELOPMENT_NOTES.md
+
+# Install dependencies│   ├── API_README.md
+
+pip install -r requirements.txt│   └── POWER_API_GUIDE.md
+
+└── frontend/             # (Coming soon)
+
+# Start backend server```
+
+python main.py
+
+```---
+
+
+
+**Backend will be available at:** http://localhost:8000  ## Features
+
+**API Documentation:** http://localhost:8000/docs
+
+✅ **NASA GPM IMERG Integration** - Satellite rainfall data  
+
+### 3. Full Application Usage✅ **NASA POWER Integration** - Ground-based climate data  
+
+✅ **Flood Risk Assessment** - Automated risk scoring (LOW/MEDIUM/HIGH)  
+
+1. **Start both servers** (frontend + backend)✅ **XGBoost ML Model** - AI-powered flood prediction (84-88% accuracy)  
+
+2. **Open http://localhost:5173** in your browser✅ **RESTful API** - FastAPI with auto-generated docs  
+
+3. **Click on any location** on the interactive map✅ **Modular Architecture** - Scalable and maintainable  
+
+4. **Click "Run Analysis"** to get NASA-powered flood risk assessment🚧 **Frontend** - React + Leaflet map (in progress)
+
+5. **View color-coded risk markers** with detailed climate data
 
 ---
 
 ---
 
-## Quick Start
+## API Endpoints
 
-## 🚀 Quick Start Guide
+## 🗺️ Project Structure
 
-### Backend Setup
+| Endpoint | Purpose | Auth |
 
-### Prerequisites
+```|----------|---------|------|
 
-- **Node.js** 18+ and npm```powershell
+BahaLa Na/| `GET /` | Root info | No |
 
-- **Python** 3.13+cd backend
+├── frontend/             # React + Vite NASA-themed app| `GET /api/` | Health check | No |
 
-- **Git**python -m venv .venv
+│   ├── src/| `POST /api/imerg/metadata` | Query rainfall data | Yes |
 
-.\.venv\Scripts\Activate.ps1
+│   │   ├── components/   # FloodMap + shared UI components| `POST /api/power/climate` | Get climate data | No |
 
-### 1. Frontend Setup (React + NASA Branding)pip install -r requirements.txt
+│   │   │   ├── Map/      # Interactive flood risk map| `POST /api/flood-risk` | Assess flood risk | Yes |
 
+│   │   │   └── shared/   # NASA-themed UI components
 
+│   │   ├── pages/        # Dashboard with orbital animationsFull API documentation: See `/docs` folder
 
-```powershell# Set your NASA Earthdata JWT token
+│   │   ├── services/     # NASA API integrations
+
+│   │   ├── stores/       # Zustand state management---
+
+│   │   └── utils/        # Helper functions
+
+│   ├── public/           # Assets## 🤖 AI/ML Flood Prediction
+
+│   ├── package.json      # Dependencies
+
+│   └── tailwind.config.js # NASA color paletteTrain an XGBoost model using IMERG data:
+
+├── backend/              # FastAPI backend with NASA data
+
+│   ├── app/```powershell
+
+│   │   ├── routes/       # flood_risk, imerg, power, healthcd backend
+
+│   │   ├── models.py     # Pydantic data modelspip install -r requirements-ml.txt
+
+│   │   ├── config.py     # NASA API configurationpython -m ml.train_model  # Test with synthetic data
+
+│   │   └── utils.py      # Geographic utilities```
+
+│   ├── ml/               # Machine learning models
+
+│   │   ├── models/       # Trained XGBoost models**Quick Start:** See `docs/AI_ML_IMERG_COMPLETE_GUIDE.md`  
+
+│   │   └── train_model.py # ML training pipeline**Full Guide:** See `docs/ML_IMPLEMENTATION_GUIDE.md`  
+
+│   └── main.py           # FastAPI application entry**XGBoost Details:** See `docs/XGBOOST_GUIDE.md`
+
+└── README.md
+
+```---
+
 
 
 ---## Example: Flood Risk Assessment
