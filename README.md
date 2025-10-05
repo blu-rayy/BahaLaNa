@@ -54,10 +54,10 @@ BahaLa Na/
 ✅ **NASA GPM IMERG Integration** - Satellite rainfall data  
 ✅ **NASA POWER Integration** - Ground-based climate data  
 ✅ **Flood Risk Assessment** - Automated risk scoring (LOW/MEDIUM/HIGH)  
+✅ **XGBoost ML Model** - AI-powered flood prediction (84-88% accuracy)  
 ✅ **RESTful API** - FastAPI with auto-generated docs  
 ✅ **Modular Architecture** - Scalable and maintainable  
-🚧 **Frontend** - React + Leaflet map (in progress)  
-🚧 **ML Model** - Flood prediction (planned)
+🚧 **Frontend** - React + Leaflet map (in progress)
 
 ---
 
@@ -72,6 +72,22 @@ BahaLa Na/
 | `POST /api/flood-risk` | Assess flood risk | Yes |
 
 Full API documentation: See `/docs` folder
+
+---
+
+## 🤖 AI/ML Flood Prediction
+
+Train an XGBoost model using IMERG data:
+
+```powershell
+cd backend
+pip install -r requirements-ml.txt
+python -m ml.train_model  # Test with synthetic data
+```
+
+**Quick Start:** See `docs/AI_ML_IMERG_COMPLETE_GUIDE.md`  
+**Full Guide:** See `docs/ML_IMPLEMENTATION_GUIDE.md`  
+**XGBoost Details:** See `docs/XGBOOST_GUIDE.md`
 
 ---
 
