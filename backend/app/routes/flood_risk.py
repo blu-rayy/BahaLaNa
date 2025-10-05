@@ -2,6 +2,7 @@
 
 from fastapi import APIRouter, Header, HTTPException
 import httpx
+from datetime import datetime
 
 from ..models import FloodRiskRequest, ImergRequest, PowerRequest
 from ..config import CMR_SEARCH_URL, NASA_POWER_URL, EARTHDATA_JWT, IMERG_DATASET_NAME
@@ -21,6 +22,30 @@ async def assess_flood_risk(
     
     This is a basic MVP implementation - can be enhanced with ML models later.
     """
+    # Validate dates are not in the future
+    today = datetime.now().date()
+    try:
+        start_date_obj = datetime.strptime(req.start_date, "%Y-%m-%d").date()
+        end_date_obj = datetime.strptime(req.end_date, "%Y-%m-%d").date()
+        
+        if start_date_obj > today or end_date_obj > today:
+            raise HTTPException(
+                status_code=400,
+                detail="Cannot assess flood risk."
+            )
+            
+        if end_date_obj < start_date_obj:
+            raise HTTPException(
+                status_code=400,
+                detail="End date must be after start date"
+            )
+            
+    except ValueError:
+        raise HTTPException(
+            status_code=400,
+            detail="Invalid date format. Use YYYY-MM-DD format."
+        )
+    
     # Convert date formats
     # IMERG uses YYYY-MM-DD, POWER uses YYYYMMDD
     power_start = convert_date_format(req.start_date, "YYYYMMDD")
@@ -93,6 +118,10 @@ async def assess_flood_risk(
     humidity_values = [v for v in humidity_data.values() if v is not None]
     avg_humidity = sum(humidity_values) / len(humidity_values) if humidity_values else 0
     
+    # Calculate average temperature
+    temp_values = [v for v in temp_data.values() if v is not None]
+    avg_temp = sum(temp_values) / len(temp_values) if temp_values else None
+    
     # Simple risk scoring (0-100)
     # Factors: high precipitation, high humidity
     risk_score = 0
@@ -152,7 +181,7 @@ async def assess_flood_risk(
         "climate_summary": {
             "avg_precipitation_mm": round(avg_precip, 2),
             "max_precipitation_mm": round(max_precip, 2),
-            "avg_temperature_c": round(sum([v for v in temp_data.values() if v is not None]) / len([v for v in temp_data.values() if v is not None]), 2) if temp_data else None,
+            "avg_temperature_c": round(avg_temp, 2) if avg_temp is not None else None,
             "avg_humidity_percent": round(avg_humidity, 2)
         },
         "data_sources": {

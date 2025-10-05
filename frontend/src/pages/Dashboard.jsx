@@ -126,7 +126,7 @@ const Dashboard = () => {
                   <div>
                     <p className="text-sm text-gray-600 mb-2">Risk Level:</p>
                     <div
-                      className={`inline-flex items-center px-4 py-2 rounded-full text-white font-semibold ${getRiskBgColor(
+                      className={`inline-flex items-center px-4 py-2 rounded-full text-black font-semibold ${getRiskBgColor(
                         floodData.flood_risk.level
                       )}`}
                     >
@@ -135,24 +135,66 @@ const Dashboard = () => {
                   </div>
                   
                   <div>
-                    <p className="text-sm text-gray-600 mb-1">Probability:</p>
+                    <p className="text-sm text-gray-600 mb-1">Risk Score:</p>
                     <p className="text-2xl font-bold text-gray-900">
-                      {floodData.flood_risk.probability}%
+                      {floodData.flood_risk.score}/100
                     </p>
                   </div>
 
-                  <div>
-                    <p className="text-sm text-gray-600 mb-1">Confidence:</p>
-                    <p className="text-lg font-semibold text-gray-900">
-                      {floodData.flood_risk.confidence}%
-                    </p>
-                  </div>
+                  {floodData.flood_risk.factors && floodData.flood_risk.factors.length > 0 && (
+                    <div>
+                      <p className="text-sm text-gray-600 mb-2">Risk Factors:</p>
+                      <ul className="text-sm text-gray-700 space-y-1">
+                        {floodData.flood_risk.factors.map((factor, index) => (
+                          <li key={index} className="flex items-start gap-2">
+                            <span className="text-orange-500 flex-shrink-0">•</span>
+                            <span>{factor}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
+                  {floodData.climate_summary && (
+                    <div className="pt-3 border-t">
+                      <p className="text-sm text-gray-600 mb-2">Climate Summary:</p>
+                      <div className="grid grid-cols-2 gap-2 text-xs text-gray-700">
+                        <div>
+                          <span className="font-medium">Avg Rainfall:</span>
+                          <br />
+                          {floodData.climate_summary.avg_precipitation_mm}mm/day
+                        </div>
+                        <div>
+                          <span className="font-medium">Max Rainfall:</span>
+                          <br />
+                          {floodData.climate_summary.max_precipitation_mm}mm
+                        </div>
+                        <div>
+                          <span className="font-medium">Avg Temp:</span>
+                          <br />
+                          {floodData.climate_summary.avg_temperature_c}°C
+                        </div>
+                        <div>
+                          <span className="font-medium">Avg Humidity:</span>
+                          <br />
+                          {floodData.climate_summary.avg_humidity_percent}%
+                        </div>
+                      </div>
+                    </div>
+                  )}
 
                   <div className="pt-3 border-t">
                     <p className="text-xs text-gray-500">
                       Analysis period: {formatToReadable(floodData.date_range.start)} to{' '}
                       {formatToReadable(floodData.date_range.end)}
                     </p>
+                    {floodData.data_sources && (
+                      <p className="text-xs text-gray-500 mt-1">
+                        Data sources: {floodData.data_sources.power_data_days} days of climate data
+                        {floodData.data_sources.imerg_granules_found > 0 && 
+                          `, ${floodData.data_sources.imerg_granules_found} satellite images`}
+                      </p>
+                    )}
                   </div>
                 </div>
               </Card>
@@ -185,15 +227,15 @@ const Dashboard = () => {
 
           {/* Map Panel */}
           <div className="lg:col-span-2">
-            <Card className="h-[600px]">
+            <div className="bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden h-[600px]">
               {loading ? (
                 <div className="h-full flex items-center justify-center">
                   <LoadingSpinner size="xl" message="Assessing flood risk..." />
                 </div>
               ) : (
-                <FloodMap className="h-full w-full rounded-lg overflow-hidden" />
+                <FloodMap className="h-full w-full" />
               )}
-            </Card>
+            </div>
           </div>
         </div>
       </main>

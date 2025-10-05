@@ -52,6 +52,12 @@ const FloodMap = ({ className, onLocationSelect }) => {
   const setLocation = useFloodStore((state) => state.setLocation);
   const setMapCenter = useMapStore((state) => state.setCenter);
 
+  console.log('🗺️ FloodMap rendering with:', { center, zoom, location, className });
+
+  useEffect(() => {
+    console.log('🗺️ FloodMap mounted, checking for Leaflet availability:', !!L);
+  }, []);
+
   const handleLocationSelect = (lat, lng) => {
     setLocation(lat, lng);
     setMapCenter(lat, lng);
@@ -60,35 +66,55 @@ const FloodMap = ({ className, onLocationSelect }) => {
     }
   };
 
-  return (
-    <div className={className}>
-      <MapContainer
-        center={center}
-        zoom={zoom}
-        style={{ height: '100%', width: '100%', zIndex: 0 }}
-        ref={mapRef}
-      >
-        <TileLayer
-          attribution={MAP_CONFIG.TILE_ATTRIBUTION}
-          url={MAP_CONFIG.TILE_LAYER_URL}
-        />
-        
-        <MapClickHandler onLocationSelect={handleLocationSelect} />
-        <MapUpdater center={center} zoom={zoom} />
-        
-        {location && (
-          <Marker position={[location.latitude, location.longitude]}>
-            <Popup>
-              <div className="text-sm">
-                <p className="font-semibold mb-1">Selected Location</p>
-                <p>{formatCoordinates(location.latitude, location.longitude)}</p>
-              </div>
-            </Popup>
-          </Marker>
-        )}
-      </MapContainer>
-    </div>
-  );
+  try {
+    return (
+      <div className={`${className} relative`} style={{ minHeight: '400px', height: '100%' }}>
+        <MapContainer
+          center={center || [14.5995, 120.9842]}
+          zoom={zoom || 10}
+          style={{ height: '100%', width: '100%', minHeight: '400px', zIndex: 0 }}
+          ref={mapRef}
+          whenCreated={(mapInstance) => {
+            console.log('🗺️ Map created successfully:', mapInstance);
+            setTimeout(() => {
+              mapInstance.invalidateSize();
+            }, 100);
+          }}
+        >
+          <TileLayer
+            attribution={MAP_CONFIG.TILE_ATTRIBUTION}
+            url={MAP_CONFIG.TILE_LAYER_URL}
+          />
+          
+          <MapClickHandler onLocationSelect={handleLocationSelect} />
+          <MapUpdater center={center || [14.5995, 120.9842]} zoom={zoom || 10} />
+          
+          {location && (
+            <Marker position={[location.latitude, location.longitude]}>
+              <Popup>
+                <div className="text-sm">
+                  <p className="font-semibold mb-1">Selected Location</p>
+                  <p>{formatCoordinates(location.latitude, location.longitude)}</p>
+                </div>
+              </Popup>
+            </Marker>
+          )}
+        </MapContainer>
+      </div>
+    );
+  } catch (error) {
+    console.error('🗺️ FloodMap error:', error);
+    return (
+      <div className={`${className} relative flex items-center justify-center bg-gray-100`} style={{ minHeight: '400px' }}>
+        <div className="text-center text-gray-600">
+          <div className="text-4xl mb-2">🗺️</div>
+          <p className="text-lg font-semibold">Map Loading Error</p>
+          <p className="text-sm">Unable to load the interactive map</p>
+          <p className="text-xs mt-2">Check console for details</p>
+        </div>
+      </div>
+    );
+  }
 };
 
 export default FloodMap;
