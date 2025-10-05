@@ -279,56 +279,68 @@ const FloodMap = forwardRef(({ className, onMarkerClick }, ref) => {
   return (
     <div className={`${className} relative`} style={{ minHeight: '500px', height: '100%' }}>
       {/* Coordinate Display Overlay */}
-      <div className="absolute top-4 left-4 z-[1000] bg-gray-800/95 backdrop-blur-sm px-4 py-2 rounded-lg shadow-lg border border-gray-700">
-        <p className="text-xs text-gray-400 uppercase tracking-wide mb-1">Selected Location</p>
-        <p className="text-white font-mono text-sm">
+      <div 
+        className="absolute bottom-4 left-4 z-[1000] backdrop-blur-xl px-4 py-2 rounded-lg shadow-lg border border-white/20" 
+        style={{ background: 'linear-gradient(135deg, rgba(0, 30, 60, 0.95) 0%, rgba(0, 51, 102, 0.8) 100%)' }}
+      >
+        <p className="text-xs text-white/80 uppercase tracking-wide mb-1 font-semibold">Selected Location</p>
+        <p className="text-white font-mono text-sm font-bold">
           {formatCoordinates(location.latitude, location.longitude)}
         </p>
         {dateRange && dateRange.start && dateRange.end && (
-          <p className="text-xs text-cyan-400 mt-2">
+          <p className="text-xs text-blue-300 mt-2">
             📅 {dateRange.start} to {dateRange.end}
           </p>
         )}
-        <p className="text-xs text-gray-500 mt-1">Click map to change</p>
+        <p className="text-xs text-white/70 mt-1">Click map to change</p>
       </div>
 
       {/* Marker Count Overlay */}
       {markers.length > 0 && (
-        <div className="absolute top-4 right-4 z-[1000] bg-gray-800/95 backdrop-blur-sm px-4 py-2 rounded-lg shadow-lg border border-gray-700">
-          <p className="text-xs text-gray-400 uppercase tracking-wide mb-1">Risk Markers</p>
+        <div 
+          className="absolute top-4 right-4 z-[1000] backdrop-blur-xl px-4 py-2 rounded-lg shadow-lg border border-white/20" 
+          style={{ background: 'linear-gradient(135deg, rgba(0, 30, 60, 0.95) 0%, rgba(0, 51, 102, 0.8) 100%)' }}
+        >
+          <p className="text-xs text-white/80 uppercase tracking-wide mb-1 font-semibold">Risk Markers</p>
           <p className="text-white font-bold text-2xl">{markers.length}</p>
-          <p className="text-xs text-cyan-400">locations analyzed</p>
+          <p className="text-xs text-blue-300">locations analyzed</p>
         </div>
       )}
 
       {/* Risk Level Legend */}
-      <div className="absolute bottom-4 right-4 z-[1000] bg-gray-800/95 backdrop-blur-sm px-4 py-3 rounded-lg shadow-lg border border-gray-700">
-        <p className="text-xs text-gray-400 uppercase tracking-wide mb-2">Risk Levels</p>
+      <div 
+        className="absolute bottom-4 right-4 z-[1000] backdrop-blur-xl px-4 py-3 rounded-lg shadow-lg border border-white/20" 
+        style={{ background: 'linear-gradient(135deg, rgba(0, 30, 60, 0.95) 0%, rgba(0, 51, 102, 0.8) 100%)' }}
+      >
+        <p className="text-xs text-white/80 uppercase tracking-wide mb-2 font-semibold">Risk Levels</p>
         <div className="space-y-1.5">
           <div className="flex items-center space-x-2">
             <div className="w-4 h-4 rounded-full bg-red-600 border-2 border-white"></div>
-            <span className="text-white text-xs">Critical (75-100)</span>
+            <span className="text-white text-xs font-medium">Critical (75-100)</span>
           </div>
           <div className="flex items-center space-x-2">
             <div className="w-4 h-4 rounded-full bg-orange-600 border-2 border-white"></div>
-            <span className="text-white text-xs">High (50-74)</span>
+            <span className="text-white text-xs font-medium">High (50-74)</span>
           </div>
           <div className="flex items-center space-x-2">
             <div className="w-4 h-4 rounded-full bg-yellow-500 border-2 border-white"></div>
-            <span className="text-white text-xs">Medium (25-49)</span>
+            <span className="text-white text-xs font-medium">Medium (25-49)</span>
           </div>
           <div className="flex items-center space-x-2">
             <div className="w-4 h-4 rounded-full bg-green-500 border-2 border-white"></div>
-            <span className="text-white text-xs">Low (0-24)</span>
+            <span className="text-white text-xs font-medium">Low (0-24)</span>
           </div>
         </div>
       </div>
 
       {/* Loading Overlay */}
       {loading && (
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-[1000] bg-gray-800/95 backdrop-blur-sm px-6 py-4 rounded-lg shadow-lg border border-cyan-500/50">
+        <div 
+          className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-[1000] backdrop-blur-xl px-6 py-4 rounded-lg shadow-lg border border-white/20" 
+          style={{ background: 'linear-gradient(135deg, rgba(0, 30, 60, 0.95) 0%, rgba(0, 51, 102, 0.8) 100%)' }}
+        >
           <div className="flex items-center space-x-3">
-            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-cyan-400"></div>
+            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-300"></div>
             <p className="text-white font-medium">Analyzing flood risk...</p>
           </div>
         </div>

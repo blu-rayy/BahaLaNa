@@ -5,14 +5,24 @@
 
 /* Custom global styles */
 :root {
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: 'Overpass', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+html {
+  background-color: #003366; /* NASA Deep Blue */
+}
+
+#root {
+  min-height: 100vh;
+  background-color: #003366; /* NASA Deep Blue */
 }
 
 body {
   margin: 0;
   padding: 0;
   min-height: 100vh;
-  background-color: #f8fafc;
+  background-color: #003366; /* NASA Deep Blue as fallback */
+  font-family: 'Overpass', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
 /* Fix for Leaflet marker icons */
@@ -113,6 +123,20 @@ body {
   background: #555;
 }
 
+/* Date input calendar icon styling */
+input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+  cursor: pointer;
+  border-radius: 4px;
+  margin-right: 2px;
+  opacity: 0.8;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator:hover {
+  opacity: 1;
+  background: rgba(255, 255, 255, 0.1);
+}
+
 /* Toast animation */
 @keyframes slide-in {
   from {
@@ -127,4 +151,194 @@ body {
 
 .animate-slide-in {
   animation: slide-in 0.3s ease-out;
+}
+
+/* =====================================
+   NASA SPACE APPS ORBITAL BACKGROUND
+   ===================================== */
+
+/* NASA Fonts - Using local imports from @fontsource packages */
+
+/* Orbital Background Container */
+.orbital-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+/* Orbital Rings */
+.orbit {
+  position: absolute;
+  border: 2px solid rgba(0, 153, 255, 0.2);
+  border-radius: 50%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  animation: rotate 20s linear infinite;
+}
+
+.orbit-1 {
+  width: 300px;
+  height: 300px;
+  animation-duration: 25s;
+}
+
+.orbit-2 {
+  width: 500px;
+  height: 500px;
+  animation-duration: 35s;
+  animation-direction: reverse;
+}
+
+.orbit-3 {
+  width: 700px;
+  height: 700px;
+  animation-duration: 45s;
+}
+
+.orbit-4 {
+  width: 900px;
+  height: 900px;
+  animation-duration: 55s;
+  animation-direction: reverse;
+}
+
+/* Elliptical Orbits */
+.orbit-ellipse {
+  position: absolute;
+  border: 2px solid rgba(0, 153, 255, 0.15);
+  border-radius: 50%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  animation: rotate 40s linear infinite;
+}
+
+.orbit-ellipse-1 {
+  width: 600px;
+  height: 400px;
+  animation-duration: 50s;
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
+/* Satellites */
+.satellite {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: linear-gradient(45deg, #0099FF, #FFFF00);
+  border-radius: 50%;
+  box-shadow: 0 0 20px rgba(0, 153, 255, 0.8);
+  top: -4px;
+  left: -4px;
+}
+
+.satellite::before {
+  content: '';
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  background: #FFFF00;
+  border-radius: 50%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 10px rgba(255, 255, 0, 0.8);
+}
+
+.satellite-1 {
+  animation: satellite-trail 25s linear infinite;
+}
+
+.satellite-2 {
+  animation: satellite-trail 35s linear infinite reverse;
+}
+
+.satellite-3 {
+  animation: satellite-trail 45s linear infinite;
+}
+
+.satellite-4 {
+  animation: satellite-trail 55s linear infinite reverse;
+}
+
+/* Constellation Lines */
+.constellation-line {
+  position: absolute;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(0, 153, 255, 0.4), transparent);
+  animation: constellation-pulse 4s ease-in-out infinite;
+}
+
+/* Space Dots */
+.space-dots {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+
+.space-dot {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  background: rgba(255, 255, 0, 0.6);
+  border-radius: 50%;
+  animation: twinkle 3s ease-in-out infinite;
+}
+
+/* Keyframe Animations */
+@keyframes rotate {
+  from {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+  to {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}
+
+@keyframes satellite-trail {
+  0% {
+    box-shadow: 0 0 20px rgba(0, 153, 255, 0.8);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(0, 153, 255, 1), 0 0 40px rgba(255, 255, 0, 0.5);
+  }
+  100% {
+    box-shadow: 0 0 20px rgba(0, 153, 255, 0.8);
+  }
+}
+
+@keyframes constellation-pulse {
+  0%, 100% {
+    opacity: 0.3;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.05);
+  }
+}
+
+@keyframes twinkle {
+  0%, 100% {
+    opacity: 0.3;
+    transform: scale(1);
+  }
+  25% {
+    opacity: 0.8;
+    transform: scale(1.2);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.5);
+  }
+  75% {
+    opacity: 0.6;
+    transform: scale(1.1);
+  }
 }
