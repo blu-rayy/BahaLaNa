@@ -29,33 +29,33 @@ async def assess_flood_risk(
     # Create bbox around the point (±0.5 degrees)
     bbox = create_bbox_from_point(req.latitude, req.longitude, margin=0.5)
     
-    # Fetch IMERG data (rainfall)
-    if not authorization:
-        if EARTHDATA_JWT:
-            authorization = f"Bearer {EARTHDATA_JWT}"
-        else:
-            raise HTTPException(
-                status_code=401,
-                detail="Missing Authorization header for IMERG data"
-            )
+    # Fetch IMERG data (rainfall) - OPTIONAL
+    imerg_granules = []
+    if authorization or EARTHDATA_JWT:
+        try:
+            if not authorization:
+                authorization = f"Bearer {EARTHDATA_JWT}"
+            
+            # Get IMERG metadata (lightweight)
+            params = {
+                "short_name": IMERG_DATASET_NAME,
+                "page_size": 10,
+                "sort_key": "start_date",
+                "temporal": f"{req.start_date}T00:00:00Z/{req.end_date}T23:59:59Z",
+                "bounding_box": bbox
+            }
+            
+            async with httpx.AsyncClient(timeout=30.0) as client:
+                r = await client.get(CMR_SEARCH_URL, params=params, headers={"Authorization": authorization})
+                r.raise_for_status()
+                imerg_results = r.json()
+            
+            imerg_granules = imerg_results.get("feed", {}).get("entry", [])
+        except Exception as e:
+            print(f"⚠️ IMERG data unavailable: {e}")
+            # Continue without IMERG data
     
-    # Get IMERG metadata (lightweight)
-    params = {
-        "short_name": IMERG_DATASET_NAME,
-        "page_size": 10,
-        "sort_key": "start_date",
-        "temporal": f"{req.start_date}T00:00:00Z/{req.end_date}T23:59:59Z",
-        "bounding_box": bbox
-    }
-    
-    async with httpx.AsyncClient(timeout=30.0) as client:
-        r = await client.get(CMR_SEARCH_URL, params=params)
-        r.raise_for_status()
-        imerg_results = r.json()
-    
-    imerg_granules = imerg_results.get("feed", {}).get("entry", [])
-    
-    # Fetch POWER climate data
+    # Fetch POWER climate data (no auth required)
     power_req = PowerRequest(
         start_date=power_start,
         end_date=power_end,
