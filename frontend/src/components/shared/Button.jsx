@@ -16,14 +16,15 @@ const Button = ({
   ...props
 }) => {
   const baseStyles =
-    'inline-flex items-center justify-center font-semibold transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-105 active:scale-95';
+    'inline-flex items-center justify-center font-nasa-body font-bold transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-105 active:scale-95';
 
   const variants = {
-    primary: 'bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700 focus:ring-blue-500 shadow-lg hover:shadow-xl',
-    secondary: 'bg-gradient-to-r from-slate-100 to-slate-200 text-slate-700 hover:from-slate-200 hover:to-slate-300 focus:ring-slate-500 shadow-md hover:shadow-lg',
-    danger: 'bg-gradient-to-r from-red-500 to-red-600 text-white hover:from-red-600 hover:to-red-700 focus:ring-red-500 shadow-lg hover:shadow-xl',
-    success: 'bg-gradient-to-r from-green-500 to-emerald-600 text-white hover:from-green-600 hover:to-emerald-700 focus:ring-green-500 shadow-lg hover:shadow-xl',
-    outline: 'border-2 border-blue-500 text-blue-600 hover:bg-blue-50 hover:border-blue-600 focus:ring-blue-500 backdrop-blur-sm',
+    primary: 'bg-nasa-electric-blue hover:bg-nasa-light-blue text-white focus:ring-nasa-electric-blue shadow-lg hover:shadow-xl border border-nasa-electric-blue/50',
+    secondary: 'bg-nasa-deep-blue hover:bg-nasa-electric-blue text-white focus:ring-nasa-deep-blue shadow-md hover:shadow-lg border border-nasa-electric-blue/30',
+    danger: 'bg-nasa-rocket-red hover:bg-nasa-rocket-red/80 text-white focus:ring-nasa-rocket-red shadow-lg hover:shadow-xl border border-nasa-rocket-red/50',
+    success: 'bg-green-500 to-emerald-600 text-white hover:from-green-600 hover:to-emerald-700 focus:ring-green-500 shadow-lg hover:shadow-xl',
+    outline: 'border-2 border-nasa-electric-blue text-nasa-electric-blue hover:bg-nasa-electric-blue/10 hover:border-nasa-light-blue focus:ring-nasa-electric-blue backdrop-blur-sm',
+    accent: 'bg-nasa-neon-yellow hover:bg-nasa-neon-yellow/90 text-black font-black focus:ring-nasa-neon-yellow shadow-lg hover:shadow-xl',
   };
 
   const sizes = {
