@@ -1,9 +1,9 @@
 /**
  * Dashboard Page
- * Main flood risk assessment dashboard
+ * Main flood risk assessment dashboard with single date selection
  */
-import { useState, useEffect } from 'react';
-import FloodMapSimple from '../components/Map/FloodMapSimple';
+import { useState, useEffect, useRef } from 'react';
+import FloodMap from '../components/Map/FloodMap';
 import Card from '../components/shared/Card';
 import Button from '../components/shared/Button';
 import Input from '../components/shared/Input';
@@ -27,9 +27,10 @@ const Dashboard = () => {
   const setDateRange = useFloodStore((state) => state.setDateRange);
   const fetchFloodRisk = useFloodStore((state) => state.fetchFloodRisk);
   const addNotification = useUIStore((state) => state.addNotification);
-
-  const [startDate, setStartDate] = useState('');
-  const [endDate, setEndDate] = useState('');
+  
+  const [selectedDate, setSelectedDate] = useState('2024-12-31');
+  const [selectedMarker, setSelectedMarker] = useState(null);
+  const floodMapRef = useRef(null);
   
   useEffect(() => {
     console.log('✅ Dashboard mounted successfully');
@@ -37,21 +38,45 @@ const Dashboard = () => {
   }, []);
 
   const handleAssessRisk = async () => {
-    if (!startDate || !endDate) {
+    if (!location.latitude || !location.longitude) {
       addNotification({
         type: 'error',
-        message: 'Please select both start and end dates',
+        message: 'Please select a location on the map',
       });
       return;
     }
 
-    setDateRange(startDate, endDate);
+    if (!selectedDate) {
+      addNotification({
+        type: 'error',
+        message: 'Please select an analysis date',
+      });
+      return;
+    }
+
+    // Calculate 5 years before the selected date
+    const endDate = new Date(selectedDate);
+    const startDate = new Date(endDate);
+    startDate.setFullYear(endDate.getFullYear() - 5);
+    
+    const startDateStr = startDate.toISOString().split('T')[0];
+    const endDateStr = endDate.toISOString().split('T')[0];
+    
+    console.log(`📅 Setting date range: ${startDateStr} to ${endDateStr}`);
+    setDateRange(startDateStr, endDateStr);
+    
+    // Generate risk markers on the map
+    if (floodMapRef.current) {
+      console.log('🎯 Calling generateRiskMarkers from Dashboard...');
+      floodMapRef.current.generateRiskMarkers();
+    }
+    
     await fetchFloodRisk();
     
     if (!error) {
       addNotification({
         type: 'success',
-        message: 'Flood risk assessment completed',
+        message: `Flood risk assessment completed (${startDateStr} to ${endDateStr})`,
       });
     }
   };
@@ -160,7 +185,7 @@ const Dashboard = () => {
                 <h3 className="text-white font-nasa-heading font-bold">Analysis Configuration</h3>
               </div>
               
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* Location Display */}
                 <div className="bg-white/10 rounded-xl p-4 border border-white/30">
                   <p className="text-white/80 text-xs font-nasa-body uppercase tracking-wide mb-1">Location</p>
@@ -170,21 +195,19 @@ const Dashboard = () => {
                   <p className="text-white/70 text-xs font-nasa-body mt-1">Click map to change</p>
                 </div>
 
-                {/* Date Inputs */}
-                <Input
-                  type="date"
-                  label="Start Date"
-                  value={startDate}
-                  onChange={(e) => setStartDate(e.target.value)}
-                  required
-                />
-                <Input
-                  type="date"
-                  label="End Date"
-                  value={endDate}
-                  onChange={(e) => setEndDate(e.target.value)}
-                  required
-                />
+                {/* Date Selection */}
+                <div>
+                  <Input
+                    type="date"
+                    label="Analysis Date"
+                    value={selectedDate}
+                    onChange={(e) => setSelectedDate(e.target.value)}
+                    required
+                  />
+                  <p className="text-gray-500 text-xs mt-1">
+                    � Analyzes 5 years of data up to this date
+                  </p>
+                </div>
               </div>
 
               <div className="mt-4">
@@ -193,7 +216,7 @@ const Dashboard = () => {
                   className="w-full"
                   onClick={handleAssessRisk}
                   loading={loading}
-                  disabled={!startDate || !endDate}
+                  disabled={!selectedDate}
                 >
                   🚀 Run NASA Analysis
                 </Button>
@@ -219,8 +242,17 @@ const Dashboard = () => {
                       floodData.flood_risk.level
                     )}`}
                   >
-                    {floodData.flood_risk.level}
+                    {selectedMarker ? selectedMarker.level : floodData.flood_risk.level}
                   </div>
+                  <div className="text-3xl font-bold text-white mb-1">
+                    {selectedMarker ? Math.round(selectedMarker.score) : floodData.flood_risk.score}
+                  </div>
+                  <div className="text-gray-400 text-sm">Risk Score</div>
+                  {selectedMarker?.isMain && (
+                    <div className="mt-2 px-3 py-1 bg-cyan-500/20 text-cyan-400 text-xs font-semibold rounded-full inline-block">
+                      📍 Selected Location
+                    </div>
+                  )}
                   <div className="text-3xl font-nasa-heading font-black text-white mb-1">
                     {floodData.flood_risk.score}
                   </div>
@@ -228,7 +260,7 @@ const Dashboard = () => {
                 </div>
 
                 {/* Quick Metrics */}
-                {floodData.climate_summary && (
+                {(selectedMarker || floodData?.climate_summary) && (
                   <div className="grid grid-cols-2 gap-3 mt-4">
                     <div className="bg-blue-500/20 border border-white/30 rounded-xl p-3">
                       <div className="text-blue-300 text-xs font-nasa-body font-bold mb-1">Rainfall</div>
@@ -273,24 +305,47 @@ const Dashboard = () => {
 
           {/* Right Sidebar */}
           <div className="xl:col-span-1 space-y-6">
-            {/* Detailed Results */}
-            {floodData && (
-              <div className="bg-card-gradient backdrop-blur-xl rounded-2xl border border-white/30 p-6">
-                <div className="flex items-center space-x-3 mb-4">
-                  <div className="w-6 h-6 bg-white/20 rounded-lg flex items-center justify-center">
-                    <span className="text-white text-sm">📊</span>
+            {/* Detailed Results - Shows marker data when clicked, otherwise shows main flood data */}
+            {(selectedMarker || floodData) && (
+              <div className="bg-gray-800/60 backdrop-blur-xl rounded-2xl border border-gray-700/50 p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-6 h-6 bg-blue-500/20 rounded-lg flex items-center justify-center">
+                      <span className="text-blue-400 text-sm">�</span>
+                    </div>
+                    <h3 className="text-white font-semibold">Detailed Analysis</h3>
                   </div>
-                  <h3 className="text-white font-nasa-heading font-bold">Detailed Analysis</h3>
+                  {selectedMarker && (
+                    <button
+                      onClick={() => setSelectedMarker(null)}
+                      className="text-gray-400 hover:text-white transition-colors text-sm"
+                      title="Clear selection"
+                    >
+                      ✕
+                    </button>
+                  )}
                 </div>
 
+                {selectedMarker && (
+                  <div className="mb-4 px-3 py-2 bg-cyan-500/10 border border-cyan-500/20 rounded-lg">
+                    <p className="text-cyan-400 text-xs font-semibold">
+                      {selectedMarker.isMain ? '📍 Selected Location Marker' : '📍 Nearby Risk Marker'}
+                    </p>
+                    <p className="text-gray-400 text-xs mt-1">
+                      {formatCoordinates(selectedMarker.lat, selectedMarker.lng)}
+                    </p>
+                  </div>
+                )}
+
                 {/* Risk Factors */}
-                {floodData.flood_risk.factors && floodData.flood_risk.factors.length > 0 && (
+                {((selectedMarker?.data.risk_factors && selectedMarker.data.risk_factors.length > 0) || 
+                  (floodData?.flood_risk.factors && floodData.flood_risk.factors.length > 0)) && (
                   <div className="mb-6">
                     <p className="text-white/80 text-sm mb-3">Risk Factors</p>
                     <div className="space-y-2">
-                      {floodData.flood_risk.factors.map((factor, index) => (
-                        <div key={index} className="bg-yellow-500/20 border border-white/30 rounded-lg p-3">
-                          <p className="text-yellow-300 text-sm">{factor}</p>
+                      {(selectedMarker?.data.risk_factors || floodData?.flood_risk.factors || []).map((factor, index) => (
+                        <div key={index} className="bg-yellow-500/10 border border-yellow-500/20 rounded-lg p-3">
+                          <p className="text-yellow-400 text-sm">{factor}</p>
                         </div>
                       ))}
                     </div>
@@ -298,18 +353,28 @@ const Dashboard = () => {
                 )}
 
                 {/* Climate Details */}
-                {floodData.climate_summary && (
+                {(selectedMarker || floodData?.climate_summary) && (
                   <div className="space-y-3">
                     <p className="text-gray-400 text-sm mb-3">Climate Data</p>
                     <div className="bg-gray-700/50 rounded-xl p-4">
                       <div className="grid grid-cols-1 gap-3">
                         <div className="flex justify-between">
                           <span className="text-gray-400 text-sm">Max Rainfall:</span>
-                          <span className="text-white font-medium">{floodData.climate_summary.max_precipitation_mm}mm</span>
+                          <span className="text-white font-medium">
+                            {selectedMarker 
+                              ? `${selectedMarker.data.max_precipitation?.toFixed(2) || 'N/A'}mm`
+                              : `${floodData.climate_summary.max_precipitation_mm}mm`
+                            }
+                          </span>
                         </div>
                         <div className="flex justify-between">
                           <span className="text-gray-400 text-sm">Avg Humidity:</span>
-                          <span className="text-white font-medium">{floodData.climate_summary.avg_humidity_percent}%</span>
+                          <span className="text-white font-medium">
+                            {selectedMarker 
+                              ? `${selectedMarker.data.humidity?.toFixed(2) || '65.00'}%`
+                              : `${floodData.climate_summary.avg_humidity_percent}%`
+                            }
+                          </span>
                         </div>
                       </div>
                     </div>
@@ -319,17 +384,35 @@ const Dashboard = () => {
                 {/* Analysis Period */}
                 <div className="mt-6 pt-4 border-t border-gray-700">
                   <p className="text-gray-400 text-xs mb-2">Analysis Period</p>
-                  <p className="text-gray-300 text-sm">
-                    {formatToReadable(floodData.date_range.start)} to{' '}
-                    {formatToReadable(floodData.date_range.end)}
-                  </p>
-                  {floodData.data_sources && (
-                    <p className="text-gray-500 text-xs mt-2">
-                      {floodData.data_sources.power_data_days} days of climate data
-                      {floodData.data_sources.imerg_granules_found > 0 && 
-                        `, ${floodData.data_sources.imerg_granules_found} satellite images`}
-                    </p>
-                  )}
+                  {selectedMarker ? (
+                    <div className="space-y-1 text-sm">
+                      <p className="text-gray-300">
+                        {dateRange && dateRange.start && dateRange.end
+                          ? `${dateRange.start} to ${dateRange.end}`
+                          : 'Historical Data'}
+                      </p>
+                      {selectedMarker.data.data_days && (
+                        <p className="text-gray-500 text-xs mt-2">
+                          {selectedMarker.data.data_days} days of climate data
+                          {selectedMarker.data.satellite_images && `, ${selectedMarker.data.satellite_images} satellite images`}
+                        </p>
+                      )}
+                    </div>
+                  ) : floodData ? (
+                    <div>
+                      <p className="text-gray-300 text-sm">
+                        {formatToReadable(floodData.date_range.start)} to{' '}
+                        {formatToReadable(floodData.date_range.end)}
+                      </p>
+                      {floodData.data_sources && (
+                        <p className="text-gray-500 text-xs mt-2">
+                          {floodData.data_sources.power_data_days} days of climate data
+                          {floodData.data_sources.imerg_granules_found > 0 && 
+                            `, ${floodData.data_sources.imerg_granules_found} satellite images`}
+                        </p>
+                      )}
+                    </div>
+                  ) : null}
                 </div>
               </div>
             )}
