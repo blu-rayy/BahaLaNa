@@ -110,9 +110,20 @@ const MapViewController = ({ center, zoom }) => {
 
 const FloodMap = forwardRef(({ className, onMarkerClick }, ref) => {
   const [isReady, setIsReady] = useState(false);
-  const [markers, setMarkers] = useState([]);
   const [selectedLocation, setSelectedLocation] = useState(null);
   const [clickedPoint, setClickedPoint] = useState(null);
+  
+  // Get markers from store instead of local state
+  const markers = useMapStore((state) => state.riskMarkers);
+  const setMarkers = useMapStore((state) => state.setRiskMarkers);
+  
+  // Debug: log when markers state changes
+  useEffect(() => {
+    console.log('🔄 FloodMap markers state changed:', markers.length, markers);
+  }, [markers]);
+  
+  // Debug: log component render
+  console.log('🗺️ FloodMap render - markers count:', markers.length);
   
   const location = useFloodStore((state) => state.location);
   const dateRange = useFloodStore((state) => state.dateRange);
@@ -121,8 +132,8 @@ const FloodMap = forwardRef(({ className, onMarkerClick }, ref) => {
   const floodData = useFloodStore((state) => state.floodData);
   const loading = useFloodStore((state) => state.loading);
   
-  const mapCenter = useMapStore((state) => state.mapCenter);
-  const setMapCenter = useMapStore((state) => state.setMapCenter);
+  const mapCenter = useMapStore((state) => state.center);
+  const setMapCenter = useMapStore((state) => state.setCenter);
 
   useEffect(() => {
     console.log('🗺️ Advanced FloodMap mounted');
@@ -151,30 +162,23 @@ const FloodMap = forwardRef(({ className, onMarkerClick }, ref) => {
     const numMarkers = Math.floor(Math.random() * 4) + 5; // 5-8 markers
     
     // Add the main location as the first marker
-    const mainScore = floodData?.flood_risk?.score || floodData?.risk_score || Math.random() * 100;
+    const mainScore = floodData?.flood_risk?.score || floodData?.risk_score || Math.floor(Math.random() * 100);
     const mainLevel = getRiskLevel(mainScore);
     console.log(`📍 Main marker - Score: ${mainScore}, Level: ${mainLevel}`);
     
-    // Extract data from floodData if available
-    const mainData = floodData ? {
-      precipitation: floodData.climate_summary?.avg_precipitation_mm || Math.random() * 10 + 1,
-      temperature: floodData.climate_summary?.avg_temperature_c || Math.random() * 10 + 20,
-      humidity: floodData.climate_summary?.avg_humidity_percent || Math.random() * 30 + 60,
-      max_precipitation: floodData.climate_summary?.max_precipitation_mm || Math.random() * 20 + 5,
-      risk_factors: floodData.flood_risk?.factors || [],
-      data_days: floodData.data_sources?.power_data_days || 30,
-      satellite_images: floodData.data_sources?.imerg_granules_found || 10
-    } : {
-      precipitation: Math.random() * 10 + 1,
-      temperature: Math.random() * 10 + 20,
-      humidity: Math.random() * 30 + 60,
-      max_precipitation: Math.random() * 20 + 5,
-      risk_factors: [
+    // Generate realistic climate data (API data or fallback values)
+    const mainData = {
+      precipitation: floodData?.climate_summary?.avg_precipitation_mm || Math.random() * 10 + 1,
+      temperature: floodData?.climate_summary?.avg_temperature_c || Math.random() * 10 + 20,
+      humidity: floodData?.climate_summary?.avg_humidity_percent || Math.random() * 30 + 60,
+      max_precipitation: floodData?.climate_summary?.max_precipitation_mm || Math.random() * 20 + 5,
+      risk_factors: floodData?.flood_risk?.factors || [
         `High humidity (${(Math.random() * 30 + 60).toFixed(1)}%)`,
-        'IMERG satellite data available'
+        'IMERG satellite data available',
+        'Historical rainfall patterns indicate risk'
       ],
-      data_days: 30,
-      satellite_images: 10
+      data_days: floodData?.data_sources?.power_data_days || 30,
+      satellite_images: floodData?.data_sources?.imerg_granules_found || 10
     };
     
     nearbyMarkers.push({
@@ -226,7 +230,12 @@ const FloodMap = forwardRef(({ className, onMarkerClick }, ref) => {
     
     console.log(`✅ Generated ${nearbyMarkers.length} risk markers:`, nearbyMarkers);
     setMarkers(nearbyMarkers);
-    console.log('✅ Markers state updated');
+    console.log('✅ Markers state updated. New markers count:', nearbyMarkers.length);
+    
+    // Force a small delay to ensure state update
+    setTimeout(() => {
+      console.log('✅ Markers state after timeout:', markers.length);
+    }, 100);
   };
 
   // Handle map click to select location
@@ -239,7 +248,7 @@ const FloodMap = forwardRef(({ className, onMarkerClick }, ref) => {
     // Set location in store
     setLocation(lat, lng);
     setSelectedLocation({ lat, lng });
-    setMapCenter([lat, lng]);
+    setMapCenter(lat, lng);
     
     console.log('📍 Location marker set. Click "Run Analysis" to generate risk assessment.');
   };
@@ -247,12 +256,38 @@ const FloodMap = forwardRef(({ className, onMarkerClick }, ref) => {
   // Expose generateNearbyLocations to parent component via ref
   useImperativeHandle(ref, () => ({
     generateRiskMarkers: () => {
+      console.log('🎯 generateRiskMarkers called from Dashboard');
+      
+      // Force add a test marker first to verify rendering works
+      const testMarker = {
+        id: 'test-marker',
+        lat: 14.5995,
+        lng: 120.9842,
+        score: 85,
+        level: 'Critical',
+        isMain: false,
+        data: {
+          precipitation: 15.5,
+          temperature: 28.5,
+          humidity: 85,
+          risk_factors: ['Test marker'],
+          data_days: 30
+        }
+      };
+      
+      console.log('🧪 Adding test marker:', testMarker);
+      setMarkers([testMarker]);
+      
+      // Then try to generate actual markers
       if (selectedLocation) {
         console.log('🎯 Generating risk markers from Dashboard...');
         generateNearbyLocations(selectedLocation.lat, selectedLocation.lng);
       } else if (clickedPoint) {
         console.log('🎯 Generating risk markers from clicked point...');
         generateNearbyLocations(clickedPoint.lat, clickedPoint.lng);
+      } else if (location.latitude && location.longitude) {
+        console.log('🎯 Generating risk markers from default location...');
+        generateNearbyLocations(location.latitude, location.longitude);
       } else {
         console.warn('⚠️ No location selected to generate markers');
       }
@@ -279,56 +314,68 @@ const FloodMap = forwardRef(({ className, onMarkerClick }, ref) => {
   return (
     <div className={`${className} relative`} style={{ minHeight: '500px', height: '100%' }}>
       {/* Coordinate Display Overlay */}
-      <div className="absolute top-4 left-4 z-[1000] bg-gray-800/95 backdrop-blur-sm px-4 py-2 rounded-lg shadow-lg border border-gray-700">
-        <p className="text-xs text-gray-400 uppercase tracking-wide mb-1">Selected Location</p>
-        <p className="text-white font-mono text-sm">
+      <div 
+        className="absolute bottom-4 left-4 z-[1000] backdrop-blur-xl px-4 py-2 rounded-lg shadow-lg border border-white/20" 
+        style={{ background: 'linear-gradient(135deg, rgba(0, 30, 60, 0.95) 0%, rgba(0, 51, 102, 0.8) 100%)' }}
+      >
+        <p className="text-xs text-white/80 uppercase tracking-wide mb-1 font-semibold">Selected Location</p>
+        <p className="text-white font-mono text-sm font-bold">
           {formatCoordinates(location.latitude, location.longitude)}
         </p>
         {dateRange && dateRange.start && dateRange.end && (
-          <p className="text-xs text-cyan-400 mt-2">
+          <p className="text-xs text-blue-300 mt-2">
             📅 {dateRange.start} to {dateRange.end}
           </p>
         )}
-        <p className="text-xs text-gray-500 mt-1">Click map to change</p>
+        <p className="text-xs text-white/70 mt-1">Click map to change</p>
       </div>
 
       {/* Marker Count Overlay */}
       {markers.length > 0 && (
-        <div className="absolute top-4 right-4 z-[1000] bg-gray-800/95 backdrop-blur-sm px-4 py-2 rounded-lg shadow-lg border border-gray-700">
-          <p className="text-xs text-gray-400 uppercase tracking-wide mb-1">Risk Markers</p>
+        <div 
+          className="absolute top-4 right-4 z-[1000] backdrop-blur-xl px-4 py-2 rounded-lg shadow-lg border border-white/20" 
+          style={{ background: 'linear-gradient(135deg, rgba(0, 30, 60, 0.95) 0%, rgba(0, 51, 102, 0.8) 100%)' }}
+        >
+          <p className="text-xs text-white/80 uppercase tracking-wide mb-1 font-semibold">Risk Markers</p>
           <p className="text-white font-bold text-2xl">{markers.length}</p>
-          <p className="text-xs text-cyan-400">locations analyzed</p>
+          <p className="text-xs text-blue-300">locations analyzed</p>
         </div>
       )}
 
       {/* Risk Level Legend */}
-      <div className="absolute bottom-4 right-4 z-[1000] bg-gray-800/95 backdrop-blur-sm px-4 py-3 rounded-lg shadow-lg border border-gray-700">
-        <p className="text-xs text-gray-400 uppercase tracking-wide mb-2">Risk Levels</p>
+      <div 
+        className="absolute bottom-4 right-4 z-[1000] backdrop-blur-xl px-4 py-3 rounded-lg shadow-lg border border-white/20" 
+        style={{ background: 'linear-gradient(135deg, rgba(0, 30, 60, 0.95) 0%, rgba(0, 51, 102, 0.8) 100%)' }}
+      >
+        <p className="text-xs text-white/80 uppercase tracking-wide mb-2 font-semibold">Risk Levels</p>
         <div className="space-y-1.5">
           <div className="flex items-center space-x-2">
             <div className="w-4 h-4 rounded-full bg-red-600 border-2 border-white"></div>
-            <span className="text-white text-xs">Critical (75-100)</span>
+            <span className="text-white text-xs font-medium">Critical (75-100)</span>
           </div>
           <div className="flex items-center space-x-2">
             <div className="w-4 h-4 rounded-full bg-orange-600 border-2 border-white"></div>
-            <span className="text-white text-xs">High (50-74)</span>
+            <span className="text-white text-xs font-medium">High (50-74)</span>
           </div>
           <div className="flex items-center space-x-2">
             <div className="w-4 h-4 rounded-full bg-yellow-500 border-2 border-white"></div>
-            <span className="text-white text-xs">Medium (25-49)</span>
+            <span className="text-white text-xs font-medium">Medium (25-49)</span>
           </div>
           <div className="flex items-center space-x-2">
             <div className="w-4 h-4 rounded-full bg-green-500 border-2 border-white"></div>
-            <span className="text-white text-xs">Low (0-24)</span>
+            <span className="text-white text-xs font-medium">Low (0-24)</span>
           </div>
         </div>
       </div>
 
       {/* Loading Overlay */}
       {loading && (
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-[1000] bg-gray-800/95 backdrop-blur-sm px-6 py-4 rounded-lg shadow-lg border border-cyan-500/50">
+        <div 
+          className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-[1000] backdrop-blur-xl px-6 py-4 rounded-lg shadow-lg border border-white/20" 
+          style={{ background: 'linear-gradient(135deg, rgba(0, 30, 60, 0.95) 0%, rgba(0, 51, 102, 0.8) 100%)' }}
+        >
           <div className="flex items-center space-x-3">
-            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-cyan-400"></div>
+            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-300"></div>
             <p className="text-white font-medium">Analyzing flood risk...</p>
           </div>
         </div>
@@ -416,6 +463,7 @@ const FloodMap = forwardRef(({ className, onMarkerClick }, ref) => {
         )}
         
         {/* Render all risk markers */}
+        {console.log('🗺️ About to render markers. Count:', markers.length, 'Markers:', markers)}
         {markers.map((marker) => (
           <Marker
             key={marker.id}

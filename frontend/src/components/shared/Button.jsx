@@ -19,11 +19,12 @@ const Button = ({
     'inline-flex items-center justify-center font-semibold transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-105 active:scale-95';
 
   const variants = {
-    primary: 'bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700 focus:ring-blue-500 shadow-lg hover:shadow-xl',
-    secondary: 'bg-gradient-to-r from-slate-100 to-slate-200 text-slate-700 hover:from-slate-200 hover:to-slate-300 focus:ring-slate-500 shadow-md hover:shadow-lg',
-    danger: 'bg-gradient-to-r from-red-500 to-red-600 text-white hover:from-red-600 hover:to-red-700 focus:ring-red-500 shadow-lg hover:shadow-xl',
-    success: 'bg-gradient-to-r from-green-500 to-emerald-600 text-white hover:from-green-600 hover:to-emerald-700 focus:ring-green-500 shadow-lg hover:shadow-xl',
-    outline: 'border-2 border-blue-500 text-blue-600 hover:bg-blue-50 hover:border-blue-600 focus:ring-blue-500 backdrop-blur-sm',
+    primary: 'text-white hover:opacity-90 focus:ring-2 focus:ring-blue-500 shadow-lg hover:shadow-xl border border-white/30',
+    secondary: 'backdrop-blur-xl text-white hover:bg-opacity-80 focus:ring-2 focus:ring-blue-500 shadow-lg hover:shadow-xl border border-white/30',
+    accent: 'text-black hover:opacity-90 focus:ring-2 focus:ring-yellow-500 shadow-lg hover:shadow-xl font-bold',
+    danger: 'bg-gradient-to-r from-red-500 to-red-600 text-white hover:from-red-600 hover:to-red-700 focus:ring-red-500 shadow-lg hover:shadow-xl border border-white/30',
+    success: 'bg-gradient-to-r from-green-500 to-emerald-600 text-white hover:from-green-600 hover:to-emerald-700 focus:ring-green-500 shadow-lg hover:shadow-xl border border-white/30',
+    outline: 'border-2 text-blue-400 hover:bg-blue-500/10 hover:border-blue-400 focus:ring-2 focus:ring-blue-500 backdrop-blur-sm',
   };
 
   const sizes = {
@@ -32,10 +33,26 @@ const Button = ({
     lg: 'px-8 py-4 text-lg rounded-2xl',
   };
 
+  const getButtonStyle = () => {
+    switch (variant) {
+      case 'primary':
+        return { backgroundColor: '#3b82f6' };
+      case 'secondary':
+        return { background: 'linear-gradient(135deg, rgba(0, 30, 60, 0.95) 0%, rgba(0, 51, 102, 0.8) 100%)' };
+      case 'accent':
+        return { background: 'linear-gradient(to right, #FFFF00, #FFFF33)' };
+      case 'outline':
+        return { borderColor: '#0099FF', color: '#0099FF' };
+      default:
+        return {};
+    }
+  };
+
   return (
     <button
       type={type}
       className={cn(baseStyles, variants[variant], sizes[size], className)}
+      style={getButtonStyle()}
       disabled={disabled || loading}
       onClick={onClick}
       {...props}
