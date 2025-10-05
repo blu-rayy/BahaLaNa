@@ -82,31 +82,89 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-900">
-      {/* Dark Header */}
-      <header className="bg-gray-800/95 backdrop-blur-lg border-b border-gray-700/50">
+    <div className="min-h-screen bg-nasa-deep-blue relative">
+      {/* Orbital Background */}
+      <div className="orbital-background">
+        {/* Orbital rings */}
+        <div className="orbit orbit-1">
+          <div className="satellite satellite-1"></div>
+        </div>
+        <div className="orbit orbit-2">
+          <div className="satellite satellite-2"></div>
+        </div>
+        <div className="orbit orbit-3">
+          <div className="satellite satellite-3"></div>
+        </div>
+        <div className="orbit orbit-4">
+          <div className="satellite satellite-4"></div>
+        </div>
+        
+        {/* Elliptical orbits */}
+        <div className="orbit-ellipse orbit-ellipse-1"></div>
+        
+        {/* Constellation lines */}
+        <div className="constellation-line" style={{
+          top: '20%', 
+          left: '15%', 
+          width: '200px', 
+          transform: 'rotate(25deg)',
+          animationDelay: '0s'
+        }}></div>
+        <div className="constellation-line" style={{
+          bottom: '30%', 
+          left: '25%', 
+          width: '160px', 
+          transform: 'rotate(45deg)',
+          animationDelay: '2s'
+        }}></div>
+        
+        {/* Space dots */}
+        <div className="space-dots">
+          <div className="space-dot" style={{top: '15%', left: '25%', animationDelay: '0s'}}></div>
+          <div className="space-dot" style={{top: '25%', left: '75%', animationDelay: '0.5s'}}></div>
+          <div className="space-dot" style={{top: '45%', left: '15%', animationDelay: '1s'}}></div>
+          <div className="space-dot" style={{top: '65%', left: '85%', animationDelay: '1.5s'}}></div>
+          <div className="space-dot" style={{top: '75%', left: '35%', animationDelay: '2s'}}></div>
+          <div className="space-dot" style={{top: '35%', left: '50%', animationDelay: '2.5s'}}></div>
+          <div className="space-dot" style={{top: '55%', left: '65%', animationDelay: '3s'}}></div>
+          <div className="space-dot" style={{top: '85%', left: '20%', animationDelay: '0.8s'}}></div>
+          <div className="space-dot" style={{top: '10%', left: '80%', animationDelay: '1.3s'}}></div>
+          <div className="space-dot" style={{top: '90%', left: '70%', animationDelay: '1.8s'}}></div>
+          <div className="space-dot" style={{top: '5%', left: '45%', animationDelay: '2.2s'}}></div>
+          <div className="space-dot" style={{top: '30%', left: '10%', animationDelay: '1.7s'}}></div>
+          <div className="space-dot" style={{top: '50%', left: '90%', animationDelay: '0.3s'}}></div>
+          <div className="space-dot" style={{top: '70%', left: '60%', animationDelay: '2.8s'}}></div>
+          <div className="space-dot" style={{top: '95%', left: '40%', animationDelay: '1.1s'}}></div>
+          <div className="space-dot" style={{top: '20%', left: '5%', animationDelay: '2.4s'}}></div>
+          <div className="space-dot" style={{top: '60%', left: '30%', animationDelay: '0.9s'}}></div>
+          <div className="space-dot" style={{top: '40%', left: '95%', animationDelay: '1.6s'}}></div>
+        </div>
+      </div>
+
+      {/* NASA Header */}
+      <header className="bg-nasa-gradient backdrop-blur-lg border-b border-white/30 relative z-10">
         <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-10 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
-              <div className="w-10 h-10 bg-gradient-to-br from-cyan-400 to-blue-500 rounded-xl flex items-center justify-center">
-                <span className="text-white text-xl">🌊</span>
+              <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
+                <span className="text-white text-xl font-bold">🌊</span>
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-white">
+                <h1 className="text-2xl font-nasa-heading font-black text-white">
                   BahaLaNa
                 </h1>
-                <p className="text-gray-400 text-sm">
-                  AI Flood Prediction System
+                <p className="text-white/80 text-sm font-nasa-body">
+                  NASA-Powered Flood Prediction
                 </p>
               </div>
             </div>
             <div className="hidden sm:flex items-center space-x-4">
-              <div className="flex items-center space-x-2 px-3 py-1 bg-gray-700/60 rounded-full">
+              <div className="flex items-center space-x-2 px-3 py-1 bg-white/20 rounded-full">
                 <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-                <span className="text-gray-300 text-sm">Online</span>
+                <span className="text-white text-sm font-nasa-body">Online</span>
               </div>
-              <div className="px-3 py-1 bg-cyan-500/20 text-cyan-400 text-xs font-medium rounded-full border border-cyan-500/30">
-                NASA Data
+              <div className="px-3 py-1 bg-white/20 text-white text-xs font-nasa-body font-bold rounded-full border border-white/30">
+                NASA IMERG + POWER
               </div>
             </div>
           </div>
@@ -114,27 +172,27 @@ const Dashboard = () => {
       </header>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-10 py-6">
+      <main className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-10 py-6 relative z-10">
         {/* Top Control Bar */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-6">
           {/* Analysis Controls */}
           <div className="lg:col-span-8">
-            <div className="bg-gray-800/60 backdrop-blur-xl rounded-2xl border border-gray-700/50 p-6">
+            <div className="bg-card-gradient backdrop-blur-xl rounded-2xl border border-white/30 p-6">
               <div className="flex items-center space-x-3 mb-4">
-                <div className="w-6 h-6 bg-cyan-500/20 rounded-lg flex items-center justify-center">
-                  <span className="text-cyan-400 text-sm">📍</span>
+                <div className="w-6 h-6 bg-white/20 rounded-lg flex items-center justify-center">
+                  <span className="text-white text-sm">📍</span>
                 </div>
-                <h3 className="text-white font-semibold">Analysis Configuration</h3>
+                <h3 className="text-white font-nasa-heading font-bold">Analysis Configuration</h3>
               </div>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* Location Display */}
-                <div className="bg-gray-700/50 rounded-xl p-4">
-                  <p className="text-gray-400 text-xs uppercase tracking-wide mb-1">Location</p>
-                  <p className="text-white font-mono text-sm">
+                <div className="bg-white/10 rounded-xl p-4 border border-white/30">
+                  <p className="text-white/80 text-xs font-nasa-body uppercase tracking-wide mb-1">Location</p>
+                  <p className="text-white font-nasa-body font-bold text-sm">
                     {formatCoordinates(location.latitude, location.longitude)}
                   </p>
-                  <p className="text-gray-500 text-xs mt-1">Click map to change</p>
+                  <p className="text-white/70 text-xs font-nasa-body mt-1">Click map to change</p>
                 </div>
 
                 {/* Date Selection */}
@@ -160,7 +218,7 @@ const Dashboard = () => {
                   loading={loading}
                   disabled={!selectedDate}
                 >
-                  {loading ? 'Analyzing...' : 'Run Analysis'}
+                  🚀 Run NASA Analysis
                 </Button>
               </div>
             </div>
@@ -168,23 +226,20 @@ const Dashboard = () => {
 
           {/* Quick Stats */}
           <div className="lg:col-span-4">
-            {(floodData || selectedMarker) ? (
-              <div className="bg-gray-800/60 backdrop-blur-xl rounded-2xl border border-gray-700/50 p-6">
+            {floodData ? (
+              <div className="bg-card-gradient backdrop-blur-xl rounded-2xl border border-white/30 p-6">
                 <div className="flex items-center space-x-3 mb-4">
-                  <div className="w-6 h-6 bg-red-500/20 rounded-lg flex items-center justify-center">
+                  <div className="w-6 h-6 bg-red-500/30 rounded-lg flex items-center justify-center">
                     <span className="text-red-400 text-sm">⚠️</span>
                   </div>
-                  <h3 className="text-white font-semibold">Risk Assessment</h3>
-                  {selectedMarker && (
-                    <span className="ml-auto text-cyan-400 text-xs">📍 Marker Data</span>
-                  )}
+                  <h3 className="text-white font-nasa-heading font-bold">Risk Assessment</h3>
                 </div>
                 
                 {/* Risk Level */}
                 <div className="text-center mb-4">
                   <div
-                    className={`inline-flex items-center px-4 py-2 rounded-xl text-black font-bold text-sm mb-2 ${getRiskBgColor(
-                      selectedMarker ? selectedMarker.level : floodData.flood_risk.level
+                    className={`inline-flex items-center px-4 py-2 rounded-xl text-white font-bold text-sm mb-2 ${getRiskBgColor(
+                      floodData.flood_risk.level
                     )}`}
                   >
                     {selectedMarker ? selectedMarker.level : floodData.flood_risk.level}
@@ -198,39 +253,33 @@ const Dashboard = () => {
                       📍 Selected Location
                     </div>
                   )}
+                  <div className="text-3xl font-nasa-heading font-black text-white mb-1">
+                    {floodData.flood_risk.score}
+                  </div>
+                  <div className="text-white/80 text-sm font-nasa-body">Risk Score</div>
                 </div>
 
                 {/* Quick Metrics */}
                 {(selectedMarker || floodData?.climate_summary) && (
                   <div className="grid grid-cols-2 gap-3 mt-4">
-                    <div className="bg-blue-500/10 border border-blue-500/20 rounded-xl p-3">
-                      <div className="text-blue-400 text-xs font-medium mb-1">Rainfall</div>
-                      <div className="text-white font-bold">
-                        {selectedMarker 
-                          ? `${selectedMarker.data.precipitation?.toFixed(2) || 'N/A'}mm`
-                          : `${floodData.climate_summary.avg_precipitation_mm}mm`
-                        }
-                      </div>
+                    <div className="bg-blue-500/20 border border-white/30 rounded-xl p-3">
+                      <div className="text-blue-300 text-xs font-nasa-body font-bold mb-1">Rainfall</div>
+                      <div className="text-white font-nasa-body font-bold">{floodData.climate_summary.avg_precipitation_mm}mm</div>
                     </div>
-                    <div className="bg-orange-500/10 border border-orange-500/20 rounded-xl p-3">
-                      <div className="text-orange-400 text-xs font-medium mb-1">Temperature</div>
-                      <div className="text-white font-bold">
-                        {selectedMarker 
-                          ? `${selectedMarker.data.temperature?.toFixed(2) || 'N/A'}°C`
-                          : `${floodData.climate_summary.avg_temperature_c}°C`
-                        }
-                      </div>
+                    <div className="bg-yellow-500/20 border border-white/30 rounded-xl p-3">
+                      <div className="text-yellow-300 text-xs font-nasa-body font-bold mb-1">Temperature</div>
+                      <div className="text-white font-nasa-body font-bold">{floodData.climate_summary.avg_temperature_c}°C</div>
                     </div>
                   </div>
                 )}
               </div>
             ) : (
-              <div className="bg-gray-800/60 backdrop-blur-xl rounded-2xl border border-gray-700/50 p-6">
+              <div className="bg-card-gradient backdrop-blur-xl rounded-2xl border border-white/30 p-6">
                 <div className="text-center">
-                  <div className="w-12 h-12 bg-gray-700 rounded-xl flex items-center justify-center mx-auto mb-3">
-                    <span className="text-gray-400 text-xl">📊</span>
+                  <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center mx-auto mb-3">
+                    <span className="text-white text-xl">📊</span>
                   </div>
-                  <p className="text-gray-400 text-sm">Run analysis to see results</p>
+                  <p className="text-white/80 text-sm font-nasa-body">Run analysis to see results</p>
                 </div>
               </div>
             )}
@@ -241,8 +290,16 @@ const Dashboard = () => {
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
           {/* Map Panel */}
           <div className="xl:col-span-2">
-            <div className="bg-gray-800/60 backdrop-blur-xl rounded-2xl border border-gray-700/50 overflow-hidden h-[600px]">
-              <FloodMap ref={floodMapRef} className="h-full w-full" onMarkerClick={setSelectedMarker} />
+            <div className="bg-card-gradient backdrop-blur-xl rounded-2xl border border-white/30 overflow-hidden h-[600px]">
+              {loading ? (
+                <div className="h-full flex flex-col items-center justify-center">
+                  <LoadingSpinner size="xl" />
+                  <p className="mt-4 text-white font-nasa-body font-bold">Processing Analysis...</p>
+                  <p className="text-xs text-blue-300 font-nasa-body mt-1">NASA IMERG + POWER Data</p>
+                </div>
+              ) : (
+                <FloodMapSimple className="h-full w-full" />
+              )}
             </div>
           </div>
 
@@ -284,7 +341,7 @@ const Dashboard = () => {
                 {((selectedMarker?.data.risk_factors && selectedMarker.data.risk_factors.length > 0) || 
                   (floodData?.flood_risk.factors && floodData.flood_risk.factors.length > 0)) && (
                   <div className="mb-6">
-                    <p className="text-gray-400 text-sm mb-3">Risk Factors</p>
+                    <p className="text-white/80 text-sm mb-3">Risk Factors</p>
                     <div className="space-y-2">
                       {(selectedMarker?.data.risk_factors || floodData?.flood_risk.factors || []).map((factor, index) => (
                         <div key={index} className="bg-yellow-500/10 border border-yellow-500/20 rounded-lg p-3">
@@ -362,31 +419,31 @@ const Dashboard = () => {
 
             {/* Error Display */}
             {error && (
-              <div className="bg-red-500/10 border border-red-500/20 rounded-2xl p-6">
+              <div className="bg-red-500/20 border border-white/30 rounded-2xl p-6">
                 <div className="flex items-start gap-3">
-                  <div className="w-6 h-6 bg-red-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <div className="w-6 h-6 bg-red-500/30 rounded-lg flex items-center justify-center flex-shrink-0">
                     <span className="text-red-400 text-sm">⚠️</span>
                   </div>
                   <div>
-                    <p className="text-red-400 font-semibold mb-1">Analysis Error</p>
-                    <p className="text-red-300 text-sm">{error}</p>
+                    <p className="text-red-400 font-nasa-body font-bold mb-1">Analysis Error</p>
+                    <p className="text-white/80 text-sm font-nasa-body">{error}</p>
                   </div>
                 </div>
               </div>
             )}
 
             {/* System Info */}
-            <div className="bg-gray-800/60 backdrop-blur-xl rounded-2xl border border-gray-700/50 p-6">
+            <div className="bg-card-gradient backdrop-blur-xl rounded-2xl border border-white/30 p-6">
               <div className="flex items-center space-x-3 mb-4">
-                <div className="w-6 h-6 bg-gray-600/20 rounded-lg flex items-center justify-center">
-                  <span className="text-gray-400 text-sm">ℹ️</span>
+                <div className="w-6 h-6 bg-white/20 rounded-lg flex items-center justify-center">
+                  <span className="text-white text-sm">ℹ️</span>
                 </div>
-                <h3 className="text-white font-semibold">System Info</h3>
+                <h3 className="text-white font-nasa-heading font-bold">System Info</h3>
               </div>
-              <div className="space-y-3 text-sm text-gray-400">
+              <div className="space-y-3 text-sm text-white/80 font-nasa-body">
                 <p>• Click map to select location</p>
                 <p>• Use historical dates only</p>
-                <p>• Analysis uses NASA POWER data</p>
+                <p>• Analysis uses NASA IMERG + POWER data</p>
                 <p>• Results updated in real-time</p>
               </div>
             </div>
